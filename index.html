@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>لوحة جاهزية سباهي – قسم الصيدلية</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --paper: #F1F5F4; --surface: #FFFFFF; --ink: #132B29; --ink-2: #4A625F; --ink-3: #7C908C;
+  --line: #D9E3E0; --line-2: #E9EFED; --brand: #0E6B5C; --brand-ink: #FFFFFF; --brand-soft: #E1F0EC;
+  --met: #2E9C6C; --partial: #DE9F17; --notmet: #C8412F; --na: #BAC5C2;
+  --met-soft: #E3F3EA; --partial-soft: #FCF2DA; --notmet-soft: #FBE6E2;
+  --series: #0E6B5C; --series-2: #4F84B5; --muted-bar: #A7B9B5; --grid: #E4EBE9;
+  --radius: 10px; --shadow: 0 1px 2px rgba(19, 43, 41, .06);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #0B1716; --surface: #122321; --ink: #E1EDEA; --ink-2: #A6BBB7; --ink-3: #7B908C;
+    --line: #233E3A; --line-2: #19302D; --brand: #3DB39A; --brand-ink: #062019; --brand-soft: #15332D;
+    --met: #3BB880; --partial: #EEB23A; --notmet: #E3604C; --na: #475A57;
+    --met-soft: #143528; --partial-soft: #382D11; --notmet-soft: #3C1C17;
+    --series: #3DB39A; --series-2: #7DAEDB; --muted-bar: #4D6460; --grid: #1F3734;
+    --shadow: none;
+    color-scheme: dark;
+  }
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--paper); color: var(--ink); }
+body {
+  font-family: "IBM Plex Sans Arabic", "Segoe UI", Tahoma, "Noto Sans Arabic", sans-serif;
+  font-size: 15px; line-height: 1.6; -webkit-font-smoothing: antialiased;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.num, .tab-num { font-variant-numeric: tabular-nums; }
+button, select, input { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; border-radius: 6px; }
+
+/* ---------- top bar ---------- */
+.top { background: var(--surface); border-bottom: 1px solid var(--line); padding-top: env(safe-area-inset-top, 0px); position: sticky; top: 0; z-index: 20; }
+.top-in { max-width: 1280px; margin: 0 auto; padding: 14px 20px 0; }
+.brand-row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.mark { width: 40px; height: 40px; flex: none; }
+.titles { flex: 1 1 260px; min-width: 0; }
+.titles h1 { margin: 0; font-size: 19px; font-weight: 700; line-height: 1.35; letter-spacing: 0; }
+.titles p { margin: 0; font-size: 13px; color: var(--ink-2); }
+.controls { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.sample { font-size: 12px; color: var(--partial); border: 1px dashed currentColor; border-radius: 999px; padding: 1px 10px; white-space: nowrap; }
+.month { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ink-2); }
+.month select { appearance: none; background: var(--brand-soft); border: 1px solid transparent; border-radius: 8px; padding: 6px 12px 6px 30px; color: var(--ink); font-weight: 600; cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%237C908C' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-position: 11px 50%; background-size: 10px 6px; background-repeat: no-repeat; }
+.tabs { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; margin-top: 10px; }
+.tabs::-webkit-scrollbar { display: none; }
+.tab { background: none; border: 0; padding: 10px 14px 12px; font-size: 14px; color: var(--ink-2); cursor: pointer; white-space: nowrap; border-bottom: 3px solid transparent; font-weight: 500; }
+.tab:hover { color: var(--ink); }
+.tab[aria-selected="true"] { color: var(--brand); border-bottom-color: var(--brand); font-weight: 700; }
+
+/* ---------- layout ---------- */
+main { max-width: 1280px; margin: 0 auto; padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+.page[hidden] { display: none; }
+.page { display: flex; flex-direction: column; gap: 16px; }
+.row { display: grid; gap: 16px; grid-template-columns: repeat(12, minmax(0, 1fr)); }
+.span-12 { grid-column: span 12; } .span-8 { grid-column: span 8; } .span-7 { grid-column: span 7; } .span-6 { grid-column: span 6; }
+.span-5 { grid-column: span 5; } .span-4 { grid-column: span 4; }
+@media (max-width: 980px) { .span-8, .span-7, .span-6, .span-5, .span-4 { grid-column: span 12; } }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow); min-width: 0; position: relative; }
+.panel h2 { margin: 0; font-size: 15px; font-weight: 700; }
+.panel .sub { margin: 2px 0 14px; font-size: 12.5px; color: var(--ink-3); }
+.panel-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; }
+
+/* ---------- decision strip ---------- */
+.verdict { display: flex; gap: 14px; align-items: flex-start; border-radius: var(--radius); padding: 14px 18px; border: 1px solid var(--line); background: var(--surface); }
+.verdict .dot { width: 12px; height: 12px; border-radius: 50%; margin-top: 7px; flex: none; }
+.verdict b { font-weight: 700; }
+.verdict.bad { background: var(--notmet-soft); border-color: transparent; } .verdict.bad .dot { background: var(--notmet); }
+.verdict.warn { background: var(--partial-soft); border-color: transparent; } .verdict.warn .dot { background: var(--partial); }
+.verdict.ok { background: var(--met-soft); border-color: transparent; } .verdict.ok .dot { background: var(--met); }
+.verdict p { margin: 0; }
+
+/* ---------- metric cards (dispensing-label style) ---------- */
+.cards { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px 12px; position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 2px; box-shadow: var(--shadow); }
+.card::before { content: ""; position: absolute; inset-block: 0; inset-inline-start: 0; width: 4px; background: var(--strip, var(--line)); }
+.card .lbl { font-size: 12.5px; color: var(--ink-2); font-weight: 500; }
+.card .val { font-size: 32px; font-weight: 700; line-height: 1.2; font-variant-numeric: tabular-nums; }
+.card .val small { font-size: 15px; font-weight: 500; color: var(--ink-3); }
+.card .meta { font-size: 12.5px; color: var(--ink-3); font-variant-numeric: tabular-nums; min-height: 20px; }
+.card .spark { height: 34px; margin-top: 6px; }
+.up { color: var(--met); } .down { color: var(--notmet); } .flat { color: var(--ink-3); }
+.segbar { display: flex; height: 8px; border-radius: 999px; overflow: hidden; margin-top: 14px; background: var(--line-2); }
+.segbar span { display: block; height: 100%; }
+
+/* ---------- charts ---------- */
+.chart { position: relative; }
+.svg { display: block; direction: ltr; overflow: visible; }
+.svg text { font-family: inherit; font-size: 11.5px; fill: var(--ink-3); font-variant-numeric: tabular-nums; }
+.svg text.sel { fill: var(--ink); font-weight: 700; }
+.svg text.vl { fill: var(--ink); font-weight: 700; font-size: 12.5px; }
+.svg .grid { stroke: var(--grid); stroke-width: 1; }
+.svg .ref { stroke: var(--ink-3); stroke-width: 1.25; stroke-dasharray: 5 4; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12.5px; color: var(--ink-2); margin-bottom: 10px; }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-inline-end: 6px; vertical-align: -1px; }
+.bars { display: flex; flex-direction: column; gap: 10px; }
+.bar-row { display: grid; grid-template-columns: minmax(84px, 38%) 1fr 56px; gap: 10px; align-items: center; font-size: 13px; cursor: default; }
+.bar-row .bl { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bar-track { position: relative; height: 10px; border-radius: 999px; background: var(--line-2); }
+.bar-fill { position: absolute; inset-block: 0; inset-inline-start: 0; border-radius: 999px; }
+.bar-ref { position: absolute; top: -4px; bottom: -4px; border-inline-start: 1.5px dashed var(--ink-3); }
+.bar-row .bv { font-variant-numeric: tabular-nums; font-weight: 600; text-align: end; }
+.donut-wrap { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; justify-content: center; }
+.donut-legend { display: flex; flex-direction: column; gap: 8px; font-size: 13px; }
+.donut-legend div { display: flex; align-items: center; gap: 8px; }
+.donut-legend i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.donut-legend b { font-variant-numeric: tabular-nums; margin-inline-start: auto; padding-inline-start: 14px; }
+
+/* ---------- gaps list ---------- */
+.gaps { display: flex; flex-direction: column; }
+.gap { display: grid; grid-template-columns: auto 1fr auto; gap: 4px 12px; padding: 10px 0; border-bottom: 1px solid var(--line-2); align-items: start; }
+.gap:last-child { border-bottom: 0; }
+.gap .code { font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.gap .t { font-size: 13.5px; }
+.gap .act { grid-column: 2 / 4; font-size: 12.5px; color: var(--ink-3); }
+.pill { display: inline-block; font-size: 12px; font-weight: 600; padding: 1px 10px; border-radius: 999px; white-space: nowrap; }
+.pill.met { background: var(--met-soft); color: var(--met); }
+.pill.partial { background: var(--partial-soft); color: var(--partial); }
+.pill.notmet { background: var(--notmet-soft); color: var(--notmet); }
+.pill.na { background: var(--line-2); color: var(--ink-3); }
+.esr { display: inline-block; font-size: 10.5px; font-weight: 700; color: var(--notmet); border: 1px solid currentColor; border-radius: 4px; padding: 0 4px; line-height: 1.45; margin-inline-start: 6px; vertical-align: 1px; }
+
+/* ---------- blister heat map ---------- */
+.toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.chip { background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; font-size: 13px; cursor: pointer; white-space: nowrap; }
+.chip[aria-pressed="true"] { background: var(--brand); color: var(--brand-ink); border-color: var(--brand); }
+.search { flex: 1 1 180px; min-width: 150px; background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 5px 14px; font-size: 13px; }
+.blister-scroll { overflow-x: auto; }
+.blister-min { min-width: 540px; }
+.bl-grid { display: grid; grid-template-columns: minmax(170px, 300px) repeat(var(--n), minmax(26px, 1fr)); gap: 6px 6px; align-items: center; }
+.bl-head { position: sticky; top: 0; background: var(--surface); padding: 4px 0 8px; z-index: 1; }
+.bl-head .mh { background: none; border: 0; width: 100%; text-align: center; font-size: 12px; color: var(--ink-3); cursor: pointer; border-radius: 6px; padding: 2px 0; }
+.bl-head .mh.on { color: var(--brand-ink); background: var(--brand); font-weight: 700; }
+.pack { background: var(--line-2); border-radius: 14px; padding: 12px 14px; margin-bottom: 10px; }
+.pack-h { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-bottom: 8px; font-size: 13px; }
+.pack-h b { font-weight: 700; }
+.pack-h span { color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.bl-lab { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--ink-2); }
+.bl-lab b { color: var(--ink); font-variant-numeric: tabular-nums; margin-inline-end: 6px; }
+.cap { height: 16px; width: 100%; max-width: 46px; justify-self: center; border-radius: 999px; cursor: pointer; position: relative; border: 1.5px solid transparent; transition: transform .12s ease; }
+.cap:hover { transform: scale(1.08); }
+.cap.met { background: var(--met); }
+.cap.partial { background: linear-gradient(to left, var(--partial) 50%, var(--partial-soft) 50%); border-color: var(--partial); }
+.cap.notmet { background: var(--notmet-soft); border-color: var(--notmet); }
+.cap.na { background: var(--na); }
+.cap.on { box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--brand); }
+.counts { display: flex; gap: 8px; flex-wrap: wrap; }
+.empty { color: var(--ink-3); font-size: 13.5px; padding: 18px 0; text-align: center; }
+
+/* ---------- KPI tiles ---------- */
+.kpis { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); }
+.kpi { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px 10px; position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 4px; }
+.kpi::before { content: ""; position: absolute; inset-block: 0; inset-inline-start: 0; width: 4px; background: var(--strip); }
+.kpi .kh { display: flex; justify-content: space-between; gap: 10px; align-items: flex-start; }
+.kpi .kn { font-size: 13.5px; font-weight: 600; line-height: 1.45; }
+.kpi .ks { font-size: 11.5px; color: var(--ink-3); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.kpi .kv { font-size: 26px; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.2; }
+.kpi .kv small { font-size: 13px; color: var(--ink-3); font-weight: 500; }
+.kpi .kt { font-size: 12.5px; color: var(--ink-3); display: flex; justify-content: space-between; gap: 8px; font-variant-numeric: tabular-nums; }
+.kpi .spark { height: 40px; margin-top: 4px; }
+
+/* ---------- table ---------- */
+.tbl-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+th { text-align: start; font-weight: 600; color: var(--ink-3); font-size: 12.5px; padding: 8px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+td { padding: 10px; border-bottom: 1px solid var(--line-2); vertical-align: top; }
+td.nw { white-space: nowrap; font-variant-numeric: tabular-nums; }
+tr.late td { background: var(--notmet-soft); }
+tr.late td:first-child { box-shadow: inset -3px 0 0 var(--notmet); }
+
+/* ---------- tooltip & footer ---------- */
+.tip { position: fixed; z-index: 50; pointer-events: none; background: var(--surface); color: var(--ink); border: 1px solid var(--line); border-radius: 8px; padding: 7px 10px; font-size: 12.5px; box-shadow: 0 6px 20px rgba(0,0,0,.14); display: none; max-width: 280px; font-variant-numeric: tabular-nums; }
+.tip .th { color: var(--ink-3); margin-bottom: 2px; }
+.tip i { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-inline-end: 6px; }
+footer { max-width: 1280px; margin: 0 auto; padding: 4px 20px 32px; font-size: 12.5px; color: var(--ink-3); line-height: 1.8; }
+footer p { margin: 0 0 4px; max-width: 80ch; }
+@media (max-width: 640px) {
+  .top-in { padding: 12px 14px 0; } main { padding: 14px; } footer { padding: 4px 14px 28px; }
+  .titles h1 { font-size: 16.5px; } .card .val { font-size: 28px; }
+  .mark { width: 34px; height: 34px; }
+  .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .cards .card:last-child:nth-child(odd) { grid-column: span 2; }
+  .card { padding: 12px 14px 10px; } .card .val { font-size: 24px; } .card .lbl { font-size: 12px; line-height: 1.45; }
+  .panel { padding: 14px; }
+}
+@media (prefers-reduced-motion: reduce) { .cap { transition: none; } .cap:hover { transform: none; } }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="top-in">
+    <div class="brand-row">
+      <svg class="mark" viewBox="0 0 40 40" aria-hidden="true">
+        <rect x="2" y="2" width="36" height="36" rx="10" fill="var(--brand)"/>
+        <g transform="rotate(-40 20 20)">
+          <rect x="9" y="15" width="22" height="10" rx="5" fill="none" stroke="var(--brand-ink)" stroke-width="2"/>
+          <path d="M20 15 h6 a5 5 0 0 1 0 10 h-6 z" fill="var(--brand-ink)"/>
+        </g>
+      </svg>
+      <div class="titles">
+        <h1>جاهزية قسم الصيدلية لمعايير سباهي</h1>
+        <p id="hosp"></p>
+      </div>
+      <div class="controls">
+        <span class="sample">بيانات تجريبية</span>
+        <label class="month">الشهر
+          <select id="month" aria-label="اختر شهر التقييم"></select>
+        </label>
+      </div>
+    </div>
+    <nav class="tabs" role="tablist" aria-label="صفحات اللوحة">
+      <button class="tab" role="tab" data-tab="overview" aria-selected="true">نظرة عامة</button>
+      <button class="tab" role="tab" data-tab="standards" aria-selected="false">المعايير</button>
+      <button class="tab" role="tab" data-tab="kpis" aria-selected="false">مؤشرات الأداء</button>
+      <button class="tab" role="tab" data-tab="errors" aria-selected="false">الأخطاء الدوائية</button>
+      <button class="tab" role="tab" data-tab="actions" aria-selected="false">الإجراءات التصحيحية</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <!-- ============ overview ============ -->
+  <section class="page" id="p-overview" role="tabpanel">
+    <div class="verdict" id="verdict"><span class="dot"></span><p id="verdict-t"></p></div>
+    <div class="cards" id="cards"></div>
+    <div class="row">
+      <div class="panel span-8">
+        <h2>نسبة الامتثال الشهرية</h2>
+        <p class="sub">الخط المتقطع هو المستهدف الداخلي. اضغط على أي شهر لاختياره.</p>
+        <div class="chart" id="ch-trend"></div>
+      </div>
+      <div class="panel span-4">
+        <h2>الامتثال حسب المجال</h2>
+        <p class="sub" id="dom-sub"></p>
+        <div class="bars" id="ch-domains"></div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="panel span-5">
+        <h2>حالة المعايير الـ<span id="std-count"></span></h2>
+        <p class="sub" id="donut-sub"></p>
+        <div class="donut-wrap" id="ch-donut"></div>
+      </div>
+      <div class="panel span-7">
+        <h2>المعايير التي تحتاج إغلاق</h2>
+        <p class="sub">غير المطابقة كليًا في الشهر المختار، مع الإجراء التصحيحي المرتبط</p>
+        <div class="gaps" id="gaps"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ standards ============ -->
+  <section class="page" id="p-standards" role="tabpanel" hidden>
+    <div class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>خريطة المعايير شهرًا بشهر</h2>
+          <p class="sub">كل كبسولة تقييم معيار في شهر. اضغط على كبسولة أو اسم شهر لاختياره.</p>
+        </div>
+        <div class="counts" id="std-counts"></div>
+      </div>
+      <div class="legend">
+        <span><i style="background:var(--met)"></i>مطابق</span>
+        <span><i style="background:linear-gradient(to left,var(--partial) 50%,var(--partial-soft) 50%);border:1px solid var(--partial)"></i>مطابق جزئيًا</span>
+        <span><i style="background:var(--notmet-soft);border:1px solid var(--notmet)"></i>غير مطابق</span>
+        <span><i style="background:var(--na)"></i>لا ينطبق</span>
+        <span><span class="esr" style="margin:0 0 0 6px">ESR</span>معيار سلامة أساسي</span>
+      </div>
+      <div class="toolbar" id="std-tools" style="margin-bottom:14px"></div>
+      <div class="blister-scroll"><div class="blister-min" id="blister"></div></div>
+    </div>
+  </section>
+
+  <!-- ============ KPIs ============ -->
+  <section class="page" id="p-kpis" role="tabpanel" hidden>
+    <div class="verdict" id="kpi-verdict"><span class="dot"></span><p id="kpi-verdict-t"></p></div>
+    <div class="kpis" id="kpi-grid"></div>
+  </section>
+
+  <!-- ============ errors ============ -->
+  <section class="page" id="p-errors" role="tabpanel" hidden>
+    <div class="cards" id="err-cards"></div>
+    <div class="row">
+      <div class="panel span-7">
+        <h2>البلاغات الشهرية حسب الشدة</h2>
+        <p class="sub">تصنيف NCC MERP. ارتفاع نسبة الأخطاء الوشيكة يعني أن ثقافة الإبلاغ تتحسن.</p>
+        <div class="legend" id="err-legend"></div>
+        <div class="chart" id="ch-err-month"></div>
+      </div>
+      <div class="panel span-5">
+        <h2>الأخطاء لكل 1,000 أمر مصروف</h2>
+        <p class="sub">عدد البلاغات ÷ الأوامر المصروفة في الشهر</p>
+        <div class="chart" id="ch-err-rate"></div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="panel span-6">
+        <h2>مرحلة حدوث الخطأ</h2>
+        <p class="sub" id="stage-sub"></p>
+        <div class="bars" id="ch-stage"></div>
+      </div>
+      <div class="panel span-6">
+        <h2>فئة الشدة NCC MERP</h2>
+        <p class="sub">A و B وشيك، C و D وصل للمريض بلا ضرر، E إلى I ضرر</p>
+        <div class="bars" id="ch-ncc"></div>
+      </div>
+      <div class="panel span-6">
+        <h2>المعدل حسب وحدة الصيدلية</h2>
+        <p class="sub" id="unit-sub"></p>
+        <div class="bars" id="ch-unit"></div>
+      </div>
+      <div class="panel span-6">
+        <h2>حسب فئة الدواء</h2>
+        <p class="sub" id="class-sub">الفئات المعلّمة من الأدوية عالية الخطورة (MM.5)</p>
+        <div class="bars" id="ch-class"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ actions ============ -->
+  <section class="page" id="p-actions" role="tabpanel" hidden>
+    <div class="cards" id="act-cards"></div>
+    <div class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>خطة الإجراءات التصحيحية</h2>
+          <p class="sub">الصفوف المظللة متأخرة عن تاريخ الاستحقاق ولم تُغلق</p>
+        </div>
+        <div class="toolbar" id="act-tools"></div>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>الرقم</th><th>المعيار</th><th>الملاحظة</th><th>الإجراء</th><th>المسؤول</th><th>الاستحقاق</th><th>الحالة</th><th>الأولوية</th></tr></thead>
+          <tbody id="act-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <p>البيانات المعروضة تجريبية لعرض الشكل فقط. المعايير حسب الإصدار الثالث لمعايير المستشفيات الوطنية، فصل إدارة الدواء من MM.1 إلى MM.41، ومعايير ESR المعتمدة هنا MM.5 و MM.6 و MM.41، وينبغي مراجعتها مع الدليل المعتمد لديكم.</p>
+  <p>نسبة الامتثال = (2 × مطابق + مطابق جزئيًا) ÷ (2 × المعايير المنطبقة). هذه طريقة تقييم ذاتي داخلية، والعتبات 90% و75% مقترحة وليست معادلة القرار الرسمية لسباهي.</p>
+</footer>
+
+<div class="tip" id="tip" role="tooltip"></div>
+
+<script>
+/* ===== الإعدادات: عدّل اسم المستشفى والمستهدفات هنا ===== */
+const CFG = { hospital: 'مستشفى تجريبي', chapter: 'فصل إدارة الدواء (MM)', target: 0.90, warn: 0.75 };
+
+/* ===== البيانات (استبدلها ببيانات المستشفى الفعلية) ===== */
+const D = {"months":["2026-01-01","2026-02-01","2026-03-01","2026-04-01","2026-05-01","2026-06-01","2026-07-01","2026-08-01","2026-09-01"],"standards":[{"c":"MM.1","t":"معلومات المريض متاحة للممارسين","d":"القيادة والأنظمة","o":1,"esr":false,"s":"MMMMMMMMM"},{"c":"MM.2","t":"الهيكل التنظيمي وقيادة الصيدلية","d":"القيادة والأنظمة","o":2,"esr":false,"s":"PPPMMMMMM"},{"c":"MM.3","t":"الكوادر ونطاق الخدمات","d":"القيادة والأنظمة","o":3,"esr":false,"s":"MMMMMMMMM"},{"c":"MM.4","t":"التخطيط والالتزام بالأنظمة وهيئة الغذاء والدواء","d":"القيادة والأنظمة","o":4,"esr":false,"s":"MMMMMMMMM"},{"c":"MM.5","t":"الأدوية عالية الخطورة","d":"القيادة والأنظمة","o":5,"esr":true,"s":"PPMMMMMMM"},{"c":"MM.6","t":"الأدوية متشابهة الشكل والنطق (LASA)","d":"القيادة والأنظمة","o":6,"esr":true,"s":"PPPMMMMMP"},{"c":"MM.7","t":"لجنة الصيدلة والعلاج","d":"الاختيار والتوريد","o":7,"esr":false,"s":"PPPPMMMMM"},{"c":"MM.8","t":"دليل أدوية المستشفى","d":"الاختيار والتوريد","o":8,"esr":false,"s":"PPPMMMMMM"},{"c":"MM.9","t":"طلبات الأدوية غير المدرجة","d":"الاختيار والتوريد","o":9,"esr":false,"s":"MMMMMMMMM"},{"c":"MM.10","t":"نقص الأدوية والمخزون واحتياج الكوارث","d":"الاختيار والتوريد","o":10,"esr":false,"s":"NPPPPPPMM"},{"c":"MM.11","t":"تخزين الأدوية العادية","d":"التخزين","o":11,"esr":false,"s":"NPPMMMMMM"},{"c":"MM.12","t":"تخزين الأدوية المبردة والمجمدة واللقاحات","d":"التخزين","o":12,"esr":false,"s":"PPPPPPPPP"},{"c":"MM.13","t":"الأدوية والكيماويات الخطرة","d":"التخزين","o":13,"esr":false,"s":"PMMMMMMMM"},{"c":"MM.14","t":"ثبات الأدوية متعددة الجرعات","d":"التخزين","o":14,"esr":false,"s":"MMMMMMMMM"},{"c":"MM.15","t":"أدوية الطوارئ وعربات الإنعاش","d":"التخزين","o":15,"esr":false,"s":"NPPPMMMMM"},{"c":"MM.16","t":"الأدوية في مناطق رعاية المرضى","d":"التخزين","o":16,"esr":false,"s":"NPPPPPPPP"},{"c":"MM.17","t":"أدوية المريض الخاصة","d":"التخزين","o":17,"esr":false,"s":"MMMMMMMMM"},{"c":"MM.18","t":"المخدرات والمؤثرات العقلية","d":"التخزين","o":18,"esr":false,"s":"PPPPPPMMM"},{"c":"MM.19","t":"صلاحيات الوصف","d":"الوصف والأوامر","o":19,"esr":false,"s":"NPPPMMMMM"},{"c":"MM.20","t":"كتابة ونقل أوامر الدواء","d":"الوصف والأوامر","o":20,"esr":false,"s":"PPPMMMMMM"},{"c":"MM.21","t":"أنواع أوامر الدواء","d":"الوصف والأوامر","o":21,"esr":false,"s":"NPPPPMMMM"},{"c":"MM.22","t":"وصف المضادات الحيوية","d":"الوصف والأوامر","o":22,"esr":false,"s":"PPPPPPPPP"},{"c":"MM.23","t":"الأوامر الشفهية والهاتفية","d":"الوصف والأوامر","o":23,"esr":false,"s":"MMMMMMMMM"},{"c":"MM.24","t":"الأدوية غير المدرجة والاستخدام خارج النشرة","d":"الوصف والأوامر","o":24,"esr":false,"s":"MMMMMMMMM"},{"c":"MM.25","t":"مراجعة الصيدلي لملاءمة الأمر","d":"التحضير والصرف","o":25,"esr":false,"s":"NPPPPMMMM"},{"c":"MM.26","t":"التحضير المعقم (CSPs)","d":"التحضير والصرف","o":26,"esr":false,"s":"NNNNNNNNN"},{"c":"MM.27","t":"التغذية الوريدية","d":"التحضير والصرف","o":27,"esr":false,"s":"PPPPPPPMM"},{"c":"MM.28","t":"تحضير العلاج الكيميائي","d":"التحضير والصرف","o":28,"esr":false,"s":"PPMMMMMMM"},{"c":"MM.29","t":"التحضير غير المعقم","d":"التحضير والصرف","o":29,"esr":false,"s":"MMMMMMMMM"},{"c":"MM.30","t":"مكافحة العدوى في إدارة الدواء","d":"التحضير والصرف","o":30,"esr":false,"s":"PPPMMMMMM"},{"c":"MM.31","t":"توحيد وسلامة التوزيع والصرف","d":"التحضير والصرف","o":31,"esr":false,"s":"PPPMMMMMM"},{"c":"MM.32","t":"ملصقات الأدوية","d":"التحضير والصرف","o":32,"esr":false,"s":"MMMMMMMMM"},{"c":"MM.33","t":"إدارة الدواء بعد الدوام","d":"التحضير والصرف","o":33,"esr":false,"s":"PPPPPPPPP"},{"c":"MM.34","t":"سحب الأدوية","d":"التحضير والصرف","o":34,"esr":false,"s":"PPMMMMMMM"},{"c":"MM.35","t":"تثقيف المريض الدوائي","d":"الإعطاء","o":35,"esr":false,"s":"MMMMMMMMM"},{"c":"MM.36","t":"الإعطاء الآمن للدواء","d":"الإعطاء","o":36,"esr":false,"s":"PPPMMMMMM"},{"c":"MM.37","t":"التحقق قبل الإعطاء","d":"الإعطاء","o":37,"esr":false,"s":"PPPPPPPPP"},{"c":"MM.38","t":"الإعطاء الذاتي","d":"الإعطاء","o":38,"esr":false,"s":"NPPPPPPMM"},{"c":"MM.39","t":"متابعة الاستجابة للدواء","d":"المتابعة والسلامة","o":39,"esr":false,"s":"PPMMMMMMM"},{"c":"MM.40","t":"التفاعلات الدوائية الضارة (ADR)","d":"المتابعة والسلامة","o":40,"esr":false,"s":"PMMMMMMMM"},{"c":"MM.41","t":"الأخطاء الدوائية والحوادث الوشيكة","d":"المتابعة والسلامة","o":41,"esr":true,"s":"PMMMMMMMM"}],"kpis":[{"id":"K01","n":"متوسط انتظار وصفات العيادات الخارجية","std":"MM.31","u":"دقيقة","mult":1,"dir":"Lower","tg":15,"num":[117747,112948,108162,101161,101602,82488,77437,74905,71760],"den":[5111,5347,5381,5171,5429,4979,5023,5233,5200]},{"id":"K02","n":"أوامر STAT المصروفة خلال 30 دقيقة","std":"MM.21","u":"%","mult":100,"dir":"Higher","tg":95,"num":[1112,1069,1066,1118,1128,1191,1236,1196,1201],"den":[1274,1198,1195,1220,1236,1285,1305,1253,1250]},{"id":"K03","n":"مراجعة الصيدلي للأوامر قبل الصرف","std":"MM.25","u":"%","mult":100,"dir":"Higher","tg":100,"num":[289,293,292,294,297,296,300,300,300],"den":[300,300,300,300,300,300,300,300,300]},{"id":"K04","n":"التزام تخزين وتمييز الأدوية عالية الخطورة","std":"MM.5","u":"%","mult":100,"dir":"Higher","tg":100,"num":[54,55,55,56,57,58,60,60,60],"den":[60,60,60,60,60,60,60,60,60]},{"id":"K05","n":"التزام فصل وتمييز أدوية LASA","std":"MM.6","u":"%","mult":100,"dir":"Higher","tg":100,"num":[44,44,45,46,46,46,47,48,48],"den":[50,50,50,50,50,50,50,50,50]},{"id":"K06","n":"اكتمال سجلات حرارة الثلاجات","std":"MM.12","u":"%","mult":100,"dir":"Higher","tg":98,"num":[698,651,695,664,687,657,688,685,700],"den":[754,705,740,709,726,695,710,707,720]},{"id":"K07","n":"مناطق رعاية وُجد بها دواء منتهي","std":"MM.16","u":"%","mult":100,"dir":"Lower","tg":0,"num":[3,3,2,2,2,2,2,1,1],"den":[24,24,24,24,24,24,24,24,24]},{"id":"K08","n":"اكتمال فحص عربات الطوارئ","std":"MM.15","u":"%","mult":100,"dir":"Higher","tg":100,"num":[617,643,666,637,668,639,630,667,660],"den":[650,674,692,652,687,650,630,667,660]},{"id":"K09","n":"جرود مخدرات بها فروقات","std":"MM.18","u":"%","mult":100,"dir":"Lower","tg":0,"num":[5,2,4,3,1,2,2,1,0],"den":[174,174,175,181,178,177,184,177,180]},{"id":"K10","n":"التزام وصف المضادات بالدليل","std":"MM.22","u":"%","mult":100,"dir":"Higher","tg":85,"num":[271,284,302,281,301,300,321,314,326],"den":[384,397,419,385,398,384,408,389,400]},{"id":"K11","n":"تثقيف المريض الموثق عند الخروج","std":"MM.35","u":"%","mult":100,"dir":"Higher","tg":90,"num":[464,461,488,522,482,495,510,514,548],"den":[585,585,597,621,575,570,585,580,600]},{"id":"K12","n":"نسبة انقطاع أصناف الدليل","std":"MM.10","u":"%","mult":100,"dir":"Lower","tg":2,"num":[40,35,28,23,29,21,16,20,15],"den":[952,987,971,976,996,922,931,905,950]}],"units":{"IP":"الصيدلية الداخلية","OP":"صيدلية العيادات الخارجية","ER":"صيدلية الطوارئ","IV":"التحضير الوريدي والتغذية","ONC":"صيدلية الأورام","STR":"المستودع الطبي","CLN":"الصيدلة الإكلينيكية"},"workload":{"IP":[18570,17082,17998,17535,16792,17484,19085,17149,16823],"OP":[24843,25179,26041,24863,26695,25073,24769,25811,25942],"ER":[7330,7277,6587,6760,6627,7070,6962,6545,6620],"IV":[2551,2423,2620,2505,2489,2551,2519,2600,2501],"ONC":[564,595,572,628,636,584,576,611,579]},"errors":[["2026-01-02","IP","المتابعة","E","مسكنات وخافضات حرارة",0],["2026-01-02","IP","الإعطاء","C","محاليل كهارل مركزة",1],["2026-01-02","IP","الإعطاء","C","أدوية القلب والضغط",0],["2026-01-03","IP","الوصف","C","مضادات حيوية",0],["2026-01-03","IP","الصرف","B","مضادات حيوية",0],["2026-01-04","IP","الوصف","D","مضادات حيوية",0],["2026-01-06","IP","الإعطاء","C","مضادات حيوية",0],["2026-01-08","IP","الوصف","C","مضادات حيوية",0],["2026-01-10","OP","الصرف","B","أخرى",0],["2026-01-10","OP","الوصف","C","مضادات حيوية",0],["2026-01-14","IP","الوصف","B","مضادات حيوية",0],["2026-01-15","OP","الصرف","D","أدوية القلب والضغط",0],["2026-01-16","IP","الوصف","A","مضادات حيوية",0],["2026-01-17","IP","الصرف","B","أدوية القلب والضغط",0],["2026-01-18","ER","الوصف","B","علاج كيميائي",1],["2026-01-19","ER","الوصف","C","مضادات حيوية",0],["2026-01-19","IP","الإعطاء","C","مضادات حيوية",0],["2026-01-20","OP","الإعطاء","D","أدوية القلب والضغط",0],["2026-01-20","IP","الإعطاء","C","مسكنات وخافضات حرارة",0],["2026-01-22","IP","الصرف","F","مسكنات أفيونية",1],["2026-01-23","OP","الوصف","D","مسكنات أفيونية",1],["2026-01-25","OP","الصرف","C","أدوية القلب والضغط",0],["2026-02-04","IP","النقل والإدخال","C","مضادات تخثر",1],["2026-02-06","OP","الصرف","D","مسكنات وخافضات حرارة",0],["2026-02-06","OP","الإعطاء","B","مسكنات أفيونية",1],["2026-02-08","ER","الوصف","B","مضادات تخثر",1],["2026-02-08","IP","الوصف","A","مسكنات وخافضات حرارة",0],["2026-02-09","OP","المتابعة","B","مضادات حيوية",0],["2026-02-09","OP","الوصف","C","مسكنات أفيونية",1],["2026-02-11","IP","الصرف","C","أخرى",0],["2026-02-12","IP","الصرف","A","إنسولين",1],["2026-02-17","OP","الصرف","D","مضادات حيوية",0],["2026-02-17","OP","الوصف","D","مسكنات وخافضات حرارة",0],["2026-02-17","OP","الوصف","B","إنسولين",1],["2026-02-19","ER","الوصف","E","مضادات تخثر",1],["2026-02-21","IP","الوصف","D","علاج كيميائي",1],["2026-02-22","IV","النقل والإدخال","D","مسكنات وخافضات حرارة",0],["2026-02-22","IP","الوصف","B","أدوية القلب والضغط",0],["2026-02-22","ER","الصرف","C","مضادات تخثر",1],["2026-02-26","IP","الوصف","A","مضادات حيوية",0],["2026-02-28","IV","الإعطاء","C","مضادات تخثر",1],["2026-02-28","OP","الإعطاء","D","أدوية القلب والضغط",0],["2026-03-01","IP","المتابعة","E","أخرى",0],["2026-03-02","ONC","الصرف","B","أخرى",0],["2026-03-02","IP","الإعطاء","A","إنسولين",1],["2026-03-04","IP","المتابعة","C","مضادات حيوية",0],["2026-03-05","ONC","النقل والإدخال","B","مسكنات وخافضات حرارة",0],["2026-03-09","IP","الوصف","D","محاليل كهارل مركزة",1],["2026-03-10","IP","الصرف","D","مضادات حيوية",0],["2026-03-12","IP","الوصف","A","أخرى",0],["2026-03-13","ER","الإعطاء","B","علاج كيميائي",1],["2026-03-14","IP","الإعطاء","A","أدوية القلب والضغط",0],["2026-03-14","ER","النقل والإدخال","C","مسكنات وخافضات حرارة",0],["2026-03-16","ONC","الإعطاء","B","مسكنات أفيونية",1],["2026-03-20","OP","الإعطاء","A","مضادات حيوية",0],["2026-03-20","IP","الوصف","D","مضادات تخثر",1],["2026-03-21","OP","الوصف","C","مسكنات وخافضات حرارة",0],["2026-03-21","ER","الإعطاء","C","أدوية القلب والضغط",0],["2026-03-22","OP","الوصف","C","مسكنات وخافضات حرارة",0],["2026-03-22","IP","الإعطاء","D","أدوية القلب والضغط",0],["2026-03-23","IP","النقل والإدخال","D","مضادات حيوية",0],["2026-03-28","IP","النقل والإدخال","D","أخرى",0],["2026-03-28","OP","الوصف","B","مضادات حيوية",0],["2026-04-02","IP","الصرف","C","أخرى",0],["2026-04-03","OP","الصرف","D","مضادات حيوية",0],["2026-04-05","IP","الوصف","C","مضادات حيوية",0],["2026-04-07","IP","الوصف","B","مسكنات وخافضات حرارة",0],["2026-04-08","OP","الإعطاء","B","مضادات حيوية",0],["2026-04-08","IV","الوصف","C","أدوية القلب والضغط",0],["2026-04-09","IP","الصرف","C","إنسولين",1],["2026-04-10","OP","الصرف","C","إنسولين",1],["2026-04-10","IP","المتابعة","B","مضادات حيوية",0],["2026-04-12","IP","الصرف","B","أخرى",0],["2026-04-15","IP","الوصف","C","مضادات تخثر",1],["2026-04-15","IV","الوصف","C","مضادات حيوية",0],["2026-04-15","IP","الإعطاء","D","مضادات حيوية",0],["2026-04-15","ER","النقل والإدخال","A","مضادات حيوية",0],["2026-04-17","ER","الصرف","A","مضادات حيوية",0],["2026-04-20","IP","الإعطاء","D","مضادات حيوية",0],["2026-04-23","OP","النقل والإدخال","C","أدوية القلب والضغط",0],["2026-04-26","OP","الصرف","B","محاليل كهارل مركزة",1],["2026-05-01","IP","الإعطاء","C","مضادات حيوية",0],["2026-05-06","IV","الوصف","A","أدوية القلب والضغط",0],["2026-05-08","IP","الصرف","A","مسكنات وخافضات حرارة",0],["2026-05-08","ONC","الإعطاء","C","مسكنات وخافضات حرارة",0],["2026-05-13","IP","النقل والإدخال","B","مضادات تخثر",1],["2026-05-13","IP","الإعطاء","B","مضادات حيوية",0],["2026-05-15","OP","الصرف","C","مضادات تخثر",1],["2026-05-15","IP","الإعطاء","D","مسكنات وخافضات حرارة",0],["2026-05-15","OP","الصرف","C","أخرى",0],["2026-05-21","ER","الإعطاء","D","إنسولين",1],["2026-05-23","OP","الصرف","A","مسكنات وخافضات حرارة",0],["2026-05-23","IP","الصرف","D","أخرى",0],["2026-05-24","ER","الصرف","C","علاج كيميائي",1],["2026-05-25","IP","المتابعة","E","إنسولين",1],["2026-05-25","IP","الصرف","A","مسكنات وخافضات حرارة",0],["2026-05-26","IP","الإعطاء","B","مضادات تخثر",1],["2026-05-27","OP","الوصف","C","أدوية القلب والضغط",0],["2026-05-27","IP","الإعطاء","C","إنسولين",1],["2026-05-28","IP","الإعطاء","B","محاليل كهارل مركزة",1],["2026-06-03","OP","الوصف","B","أدوية القلب والضغط",0],["2026-06-04","IV","النقل والإدخال","A","أخرى",0],["2026-06-04","IP","الوصف","B","أدوية القلب والضغط",0],["2026-06-10","OP","النقل والإدخال","B","أخرى",0],["2026-06-11","IP","الوصف","A","مضادات تخثر",1],["2026-06-12","ER","الوصف","C","إنسولين",1],["2026-06-16","OP","الوصف","B","مضادات حيوية",0],["2026-06-16","IP","الصرف","C","مسكنات وخافضات حرارة",0],["2026-06-17","ER","الإعطاء","B","محاليل كهارل مركزة",1],["2026-06-18","IP","الإعطاء","C","إنسولين",1],["2026-06-19","ER","الصرف","D","مضادات حيوية",0],["2026-06-19","OP","الصرف","A","أخرى",0],["2026-06-23","IP","الصرف","A","مضادات حيوية",0],["2026-06-24","OP","الوصف","C","محاليل كهارل مركزة",1],["2026-06-24","ONC","المتابعة","C","مسكنات وخافضات حرارة",0],["2026-06-26","IP","الإعطاء","C","إنسولين",1],["2026-06-27","ER","الإعطاء","C","مسكنات وخافضات حرارة",0],["2026-07-03","IP","الوصف","B","مضادات حيوية",0],["2026-07-03","ER","الصرف","B","أدوية القلب والضغط",0],["2026-07-07","IV","الإعطاء","D","مضادات حيوية",0],["2026-07-07","IP","النقل والإدخال","D","أخرى",0],["2026-07-09","IV","الوصف","F","مضادات تخثر",1],["2026-07-10","IP","الصرف","B","أدوية القلب والضغط",0],["2026-07-12","IP","الصرف","C","مسكنات وخافضات حرارة",0],["2026-07-12","OP","الصرف","B","أخرى",0],["2026-07-12","IP","الوصف","A","أدوية القلب والضغط",0],["2026-07-13","OP","المتابعة","D","أخرى",0],["2026-07-13","ER","الصرف","C","مسكنات أفيونية",1],["2026-07-14","OP","الوصف","C","أدوية القلب والضغط",0],["2026-07-19","IP","الإعطاء","C","مسكنات وخافضات حرارة",0],["2026-07-20","IP","الوصف","A","مضادات حيوية",0],["2026-07-22","ER","المتابعة","C","أخرى",0],["2026-07-23","OP","الوصف","C","إنسولين",1],["2026-08-01","IP","الصرف","C","أخرى",0],["2026-08-02","OP","الصرف","C","مسكنات وخافضات حرارة",0],["2026-08-05","IP","الصرف","B","مسكنات أفيونية",1],["2026-08-06","ER","الصرف","C","أخرى",0],["2026-08-07","ER","الوصف","B","أخرى",0],["2026-08-07","ER","الصرف","A","إنسولين",1],["2026-08-10","OP","الوصف","D","مضادات تخثر",1],["2026-08-17","IP","الصرف","C","مسكنات وخافضات حرارة",0],["2026-08-20","IP","الصرف","C","أخرى",0],["2026-08-20","ER","الإعطاء","C","مسكنات وخافضات حرارة",0],["2026-08-21","OP","الصرف","B","مضادات تخثر",1],["2026-08-22","IP","الصرف","A","أخرى",0],["2026-08-23","IP","الوصف","A","علاج كيميائي",1],["2026-08-25","IV","الإعطاء","A","مضادات حيوية",0],["2026-08-26","ER","الوصف","A","مسكنات أفيونية",1],["2026-09-02","ER","الإعطاء","B","مضادات حيوية",0],["2026-09-02","IP","الصرف","D","أخرى",0],["2026-09-03","OP","الصرف","A","مضادات حيوية",0],["2026-09-05","IV","الصرف","A","مضادات تخثر",1],["2026-09-09","IP","النقل والإدخال","C","مضادات تخثر",1],["2026-09-10","IP","الوصف","B","أخرى",0],["2026-09-10","OP","الوصف","A","مضادات حيوية",0],["2026-09-12","OP","الصرف","C","مضادات حيوية",0],["2026-09-15","ER","النقل والإدخال","B","مضادات تخثر",1],["2026-09-15","IP","الوصف","B","مسكنات وخافضات حرارة",0],["2026-09-16","ER","الإعطاء","D","أخرى",0],["2026-09-19","ER","الوصف","C","مسكنات أفيونية",1],["2026-09-26","IV","الوصف","C","مضادات تخثر",1],["2026-09-26","IV","المتابعة","A","أدوية القلب والضغط",0]],"actions":[{"id":"CAP-01","std":"MM.26","f":"غرفة التحضير المعقم غير مطابقة للمواصفات","a":"تأهيل غرفة نظيفة واعتمادها","o":"رئيس التحضير الوريدي","od":"2026-01-20","dd":"2026-11-30","st":"In Progress","p":"High"},{"id":"CAP-02","std":"MM.6","f":"ملصقات LASA ناقصة في صيدلية الطوارئ","a":"إعادة تمييز أرفف LASA وتدقيق أسبوعي","o":"مشرف صيدلية الطوارئ","od":"2026-09-10","dd":"2026-10-15","st":"In Progress","p":"High"},{"id":"CAP-03","std":"MM.12","f":"فجوات في سجلات حرارة الثلاجات أيام الإجازات","a":"تركيب حساسات حرارة بإنذار مركزي","o":"رئيس المستودع الطبي","od":"2026-03-05","dd":"2026-11-15","st":"In Progress","p":"High"},{"id":"CAP-04","std":"MM.16","f":"أدوية منتهية الصلاحية في مخزون بعض الأقسام","a":"جولات فحص شهرية مشتركة مع التمريض","o":"منسق الجودة بالصيدلية","od":"2026-04-02","dd":"2026-10-31","st":"Open","p":"Medium"},{"id":"CAP-05","std":"MM.22","f":"انخفاض الالتزام بدليل المضادات الحيوية","a":"تفعيل برنامج الإشراف على المضادات","o":"الصيدلي الإكلينيكي – الأمراض المعدية","od":"2026-02-15","dd":"2026-12-31","st":"In Progress","p":"High"},{"id":"CAP-06","std":"MM.33","f":"صرف بعد الدوام غير موثق","a":"نموذج إلكتروني لسجل الصرف بعد الدوام","o":"رئيس الصيدلية الداخلية","od":"2026-02-01","dd":"2026-09-30","st":"Open","p":"Medium"},{"id":"CAP-07","std":"MM.37","f":"التحقق قبل الإعطاء غير موثق في بعض الأجنحة","a":"تدريب على التحقق المزدوج المستقل","o":"الصيدلي الإكلينيكي – التعليم","od":"2026-03-20","dd":"2026-11-20","st":"In Progress","p":"Medium"},{"id":"CAP-08","std":"MM.5","f":"قائمة الأدوية عالية الخطورة غير محدثة","a":"تحديث القائمة واعتمادها من لجنة الصيدلة","o":"رئيس الصيدلية","od":"2026-01-10","dd":"2026-03-01","st":"Closed","p":"High"},{"id":"CAP-09","std":"MM.18","f":"فروقات في جرد المخدرات","a":"جرد مزدوج عند تسليم المناوبة","o":"صيدلي المخدرات","od":"2026-01-15","dd":"2026-06-30","st":"Closed","p":"High"},{"id":"CAP-10","std":"MM.41","f":"ضعف الإبلاغ عن الحوادث الوشيكة","a":"حملة توعية ونظام إبلاغ بدون لوم","o":"منسق الجودة بالصيدلية","od":"2026-01-05","dd":"2026-04-30","st":"Closed","p":"Medium"},{"id":"CAP-11","std":"MM.15","f":"نقص في محتويات عربات الإنعاش","a":"قائمة فحص موحدة وقفل مرقّم","o":"مشرف الصيدلية الداخلية","od":"2026-02-10","dd":"2026-05-31","st":"Closed","p":"High"},{"id":"CAP-12","std":"MM.3","f":"خطة الكوادر غير محدثة","a":"تحديث خطة الكوادر وفق إحصائيات العمل","o":"رئيس الصيدلية","od":"2026-01-25","dd":"2026-04-15","st":"Closed","p":"Low"},{"id":"CAP-13","std":"MM.8","f":"دليل الأدوية لم يُراجع سنويًا","a":"مراجعة الدليل في لجنة الصيدلة والعلاج","o":"سكرتير لجنة الصيدلة والعلاج","od":"2026-02-01","dd":"2026-05-01","st":"Closed","p":"Medium"},{"id":"CAP-14","std":"MM.32","f":"ملصقات المحاليل الوريدية غير مكتملة","a":"توحيد قالب الملصق في النظام","o":"رئيس التحضير الوريدي","od":"2026-03-01","dd":"2026-07-31","st":"Closed","p":"Medium"},{"id":"CAP-15","std":"MM.35","f":"تثقيف المريض غير موثق عند الخروج","a":"حقل توثيق إلزامي في النظام","o":"رئيس صيدلية العيادات الخارجية","od":"2026-02-20","dd":"2026-08-31","st":"Closed","p":"Low"},{"id":"CAP-16","std":"MM.13","f":"صحائف بيانات السلامة غير متوفرة لكل الكيماويات","a":"توفير صحائف SDS ورقيًا وإلكترونيًا","o":"رئيس المستودع الطبي","od":"2026-04-10","dd":"2026-10-20","st":"In Progress","p":"Medium"}]};
+
+(function () {
+  const AR_M = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+  const N = D.months.length;
+  const mName = (i) => AR_M[+D.months[i].slice(5, 7) - 1];
+  const mFull = (i) => mName(i) + ' ' + D.months[i].slice(0, 4);
+  const SC = { M: { k: 'met', n: 'مطابق', p: 2 }, P: { k: 'partial', n: 'مطابق جزئيًا', p: 1 }, N: { k: 'notmet', n: 'غير مطابق', p: 0 }, X: { k: 'na', n: 'لا ينطبق', p: null } };
+  const ST = { 'Open': 'مفتوح', 'In Progress': 'قيد التنفيذ', 'Closed': 'مغلق' };
+  const PR = { 'High': 'عالية', 'Medium': 'متوسطة', 'Low': 'منخفضة' };
+  const TODAY = new Date().toISOString().slice(0, 10);
+  const HIGH_ALERT_CLASSES = new Set(D.errors.filter((e) => e[5]).map((e) => e[4]));
+  const state = { m: N - 1, tab: 'overview', dom: 'all', esr: false, q: '', act: 'all' };
+  const $ = (id) => document.getElementById(id);
+  const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+
+  /* ---------- formatting ---------- */
+  const pct = (v, d = 1) => (v == null || isNaN(v)) ? '—' : (v * 100).toFixed(d) + '%';
+  const fx = (v, d = 1) => (v == null || isNaN(v)) ? '—' : Number(v).toFixed(d);
+  const sgn = (v, d = 1) => (v == null || isNaN(v)) ? '—' : (v > 0 ? '+' : '') + Number(v).toFixed(d);
+  const int = (v) => Number(v).toLocaleString('en-US');
+  const levelColor = (c) => c == null ? 'var(--na)' : c >= CFG.target ? 'var(--met)' : c >= CFG.warn ? 'var(--partial)' : 'var(--notmet)';
+
+  /* ---------- model ---------- */
+  const domains = [];
+  D.standards.forEach((s) => { if (!domains.includes(s.d)) domains.push(s.d); });
+  function comp(i, f) {
+    let pts = 0, app = 0;
+    for (const s of D.standards) { if (f && !f(s)) continue; const c = s.s[i]; if (c === 'X') continue; app++; pts += SC[c].p; }
+    return app ? pts / (2 * app) : null;
+  }
+  const count = (i, code, f) => D.standards.filter((s) => (!f || f(s)) && s.s[i] === code).length;
+  const esrOpen = (i) => D.standards.filter((s) => s.esr && s.s[i] !== 'M' && s.s[i] !== 'X');
+  const kVal = (k, i) => (i < 0 || k.den[i] == null) ? null : k.num[i] / k.den[i] * k.mult;
+  const kOk = (k, i) => { const v = kVal(k, i); return v == null ? null : (k.dir === 'Higher' ? v >= k.tg : v <= k.tg); };
+  const kOnTarget = (i) => D.kpis.filter((k) => kOk(k, i)).length;
+  const monthOf = (date) => D.months.findIndex((m) => m.slice(0, 7) === date.slice(0, 7));
+  const errs = D.errors.map((e) => ({ date: e[0], unit: e[1], stage: e[2], ncc: e[3], cls: e[4], ha: !!e[5], mi: monthOf(e[0]) }));
+  const orders = (i, u) => Object.entries(D.workload).reduce((a, [k, arr]) => a + ((u && u !== k) ? 0 : (arr[i] || 0)), 0);
+  const errIn = (i) => errs.filter((e) => e.mi === i);
+  const rate = (i) => { const o = orders(i); return o ? errIn(i).length / o * 1000 : null; };
+  const sev = (n) => 'AB'.includes(n) ? 'near' : 'CD'.includes(n) ? 'noharm' : 'harm';
+  const isLate = (a) => a.st !== 'Closed' && a.dd < TODAY;
+  const actFor = (code) => D.actions.filter((a) => a.std === code && a.st !== 'Closed');
+
+  /* ---------- tooltip ---------- */
+  const tipEl = $('tip');
+  function tip(evt, lines) {
+    tipEl.textContent = '';
+    lines.forEach((l, i) => {
+      const d = document.createElement('div');
+      if (i === 0) d.className = 'th';
+      if (Array.isArray(l)) { const sw = document.createElement('i'); sw.style.background = l[0]; d.append(sw, l[1]); } else d.textContent = l;
+      tipEl.append(d);
+    });
+    tipEl.style.display = 'block';
+    const w = tipEl.offsetWidth, h = tipEl.offsetHeight;
+    let x = evt.clientX - w - 14, y = evt.clientY + 14;
+    if (x < 8) x = evt.clientX + 14;
+    if (x + w > innerWidth - 8) x = innerWidth - w - 8;
+    if (y + h > innerHeight - 8) y = evt.clientY - h - 14;
+    tipEl.style.left = x + 'px'; tipEl.style.top = Math.max(8, y) + 'px';
+  }
+  const untip = () => { tipEl.style.display = 'none'; };
+  const hover = (el, fn) => { el.addEventListener('mousemove', (e) => tip(e, fn())); el.addEventListener('mouseleave', untip); };
+
+  /* ---------- svg helpers ---------- */
+  const NS = 'http://www.w3.org/2000/svg';
+  function sv(tag, attrs, parent, text) {
+    const e = document.createElementNS(NS, tag);
+    let st = attrs.style || '';
+    for (const k in attrs) {
+      if (k === 'style') continue;
+      const v = String(attrs[k]);
+      if ((k === 'fill' || k === 'stroke') && v.includes('var(')) st += `;${k}:${v}`; else e.setAttribute(k, v);
+    }
+    if (st) e.setAttribute('style', st);
+    if (text != null) e.textContent = text;
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+  function mkSvg(host, H) {
+    host.textContent = '';
+    const W = Math.max(240, Math.floor(host.clientWidth));
+    const svg = sv('svg', { viewBox: `0 0 ${W} ${H}`, width: '100%', height: H, class: 'svg' }, host);
+    return { svg, W, H };
+  }
+  function textW(svg, str, cls) { const t = sv('text', { class: cls || '' }, svg, str); const w = t.getComputedTextLength(); t.remove(); return w; }
+  function ticksFor(lo, hi, n) {
+    const step0 = (hi - lo) / n, mag = Math.pow(10, Math.floor(Math.log10(step0))), r = step0 / mag;
+    const step = (r >= 7.5 ? 10 : r >= 3.5 ? 5 : r >= 1.5 ? 2 : 1) * mag, out = [];
+    for (let v = Math.ceil(lo / step - 1e-9) * step; v <= hi + 1e-9; v += step) out.push(+v.toFixed(10));
+    return out;
+  }
+  const xOf = (i, n, left, right) => n === 1 ? (left + right) / 2 : right - i * (right - left) / (n - 1); // RTL: first month on the right
+
+  /* ---------- line chart ---------- */
+  function lineChart(host, o) {
+    const { svg, W, H } = mkSvg(host, o.H || 240);
+    const n = o.vals.length, ticks = ticksFor(o.lo, o.hi, 4);
+    const pr = Math.max(...ticks.map((t) => textW(svg, o.tick(t)))) + 10, pl = 14, pt = 22, pb = 28;
+    const L = pl, R = W - pr - 10;
+    const X = (i) => xOf(i, n, L, R), Y = (v) => pt + (1 - (v - o.lo) / (o.hi - o.lo)) * (H - pt - pb);
+    ticks.forEach((t) => { sv('line', { x1: L - 6, x2: W - pr, y1: Y(t), y2: Y(t), class: 'grid' }, svg); sv('text', { x: W - pr + 6, y: Y(t), dy: '0.32em', 'text-anchor': 'start' }, svg, o.tick(t)); });
+    const every = Math.max(1, Math.ceil(n / Math.max(1, Math.floor((R - L) / 46))));
+    for (let i = 0; i < n; i++) if (i % every === 0 || i === n - 1) sv('text', { x: X(i), y: H - 8, 'text-anchor': 'middle', class: i === state.m ? 'sel' : '' }, svg, mName(i));
+    if (o.target != null && o.target >= o.lo && o.target <= o.hi) {
+      sv('line', { x1: L - 6, x2: W - pr, y1: Y(o.target), y2: Y(o.target), class: 'ref' }, svg);
+      sv('text', { x: W - pr - 4, y: Y(o.target) - 6, 'text-anchor': 'start', direction: 'rtl' }, svg, 'المستهدف ' + o.tick(o.target));
+    }
+    const pts = o.vals.map((v, i) => [X(i), Y(v)]);
+    const gid = 'g' + Math.random().toString(36).slice(2, 8);
+    const grad = sv('linearGradient', { id: gid, x1: 0, y1: 0, x2: 0, y2: 1 }, sv('defs', {}, svg));
+    [[0, .24], [.5, .07], [1, 0]].forEach(([of, op]) => sv('stop', { offset: of, style: `stop-color:${o.color};stop-opacity:${op}` }, grad));
+    sv('path', { d: 'M' + pts.map((p) => p.join(',')).join('L') + `L${pts[n - 1][0]},${H - pb}L${pts[0][0]},${H - pb}Z`, fill: `url(#${gid})` }, svg);
+    sv('path', { d: 'M' + pts.map((p) => p.join(',')).join('L'), fill: 'none', stroke: o.color, 'stroke-width': 2.25, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, svg);
+    const rule = sv('line', { y1: pt - 8, y2: H - pb, stroke: 'var(--ink-3)', 'stroke-width': 1, opacity: 0 }, svg);
+    pts.forEach((p, i) => {
+      const on = i === state.m;
+      sv('circle', { cx: p[0], cy: p[1], r: on ? 5.5 : 3.2, fill: o.dot ? o.dot(o.vals[i]) : o.color, stroke: 'var(--surface)', 'stroke-width': on ? 2.5 : 1.5 }, svg);
+    });
+    const sp = pts[state.m];
+    if (sp) sv('text', { x: sp[0], y: sp[1] - 11, 'text-anchor': 'middle', class: 'vl' }, svg, o.fmt(o.vals[state.m]));
+    const hit = sv('rect', { x: 0, y: 0, width: W, height: H, fill: 'transparent', style: 'cursor:pointer' }, svg);
+    const near = (evt) => { const r = svg.getBoundingClientRect(), px = (evt.clientX - r.left) * W / r.width; let b = 0; pts.forEach((p, i) => { if (Math.abs(p[0] - px) < Math.abs(pts[b][0] - px)) b = i; }); return b; };
+    hit.addEventListener('mousemove', (evt) => { const i = near(evt); rule.setAttribute('x1', pts[i][0]); rule.setAttribute('x2', pts[i][0]); rule.setAttribute('opacity', .5); tip(evt, o.tip(i)); });
+    hit.addEventListener('mouseleave', () => { rule.setAttribute('opacity', 0); untip(); });
+    if (o.pick) hit.addEventListener('click', (evt) => { untip(); setMonth(near(evt)); });
+  }
+
+  /* ---------- stacked bars ---------- */
+  function stackChart(host, o) {
+    const { svg, W, H } = mkSvg(host, o.H || 240);
+    const n = o.rows.length, max = Math.max(1, ...o.rows.map((r) => o.keys.reduce((a, k) => a + r[k.k], 0)));
+    const ticks = ticksFor(0, max, 4), hi = Math.max(max, ticks[ticks.length - 1]);
+    const pr = Math.max(...ticks.map((t) => textW(svg, int(t)))) + 10, pl = 6, pt = 20, pb = 28;
+    const L = pl, R = W - pr - 6, band = (R - L) / n, bw = Math.min(30, band * 0.62);
+    const Y = (v) => pt + (1 - v / hi) * (H - pt - pb);
+    ticks.forEach((t) => { sv('line', { x1: L, x2: W - pr, y1: Y(t), y2: Y(t), class: 'grid' }, svg); sv('text', { x: W - pr + 6, y: Y(t), dy: '0.32em', 'text-anchor': 'start' }, svg, int(t)); });
+    const every = Math.max(1, Math.ceil(n / Math.max(1, Math.floor((R - L) / 46))));
+    o.rows.forEach((r, i) => {
+      const cx = R - band * i - band / 2, on = i === state.m;
+      let acc = 0;
+      o.keys.forEach((k) => {
+        const v = r[k.k]; if (!v) return;
+        sv('rect', { x: cx - bw / 2, width: bw, y: Y(acc + v), height: Math.max(0, Y(acc) - Y(acc + v) - 1.5), rx: 3, fill: k.c, opacity: on ? 1 : .55 }, svg);
+        acc += v;
+      });
+      sv('text', { x: cx, y: Y(acc) - 6, 'text-anchor': 'middle', class: on ? 'vl' : '' }, svg, int(acc));
+      if (i % every === 0 || i === n - 1) sv('text', { x: cx, y: H - 8, 'text-anchor': 'middle', class: on ? 'sel' : '' }, svg, mName(i));
+      const hit = sv('rect', { x: cx - band / 2, y: pt - 10, width: band, height: H - pt - pb + 10, fill: 'transparent', style: 'cursor:pointer' }, svg);
+      hit.addEventListener('mousemove', (evt) => tip(evt, o.tip(i)));
+      hit.addEventListener('mouseleave', untip);
+      hit.addEventListener('click', () => { untip(); setMonth(i); });
+    });
+  }
+
+  /* ---------- sparkline ---------- */
+  function spark(host, vals, o = {}) {
+    host.textContent = '';
+    const W = Math.max(120, host.clientWidth), H = host.clientHeight || 34;
+    const svg = sv('svg', { viewBox: `0 0 ${W} ${H}`, width: '100%', height: H, class: 'svg', 'aria-hidden': 'true' }, host);
+    const xs = vals.filter((v) => v != null);
+    let lo = o.lo != null ? o.lo : Math.min(...xs), hi = o.hi != null ? o.hi : Math.max(...xs);
+    if (o.target != null) { lo = Math.min(lo, o.target); hi = Math.max(hi, o.target); }
+    if (hi === lo) { hi += 1; lo -= 1; }
+    const n = vals.length, X = (i) => xOf(i, n, 4, W - 4), Y = (v) => 4 + (1 - (v - lo) / (hi - lo)) * (H - 8);
+    if (o.target != null) sv('line', { x1: 2, x2: W - 2, y1: Y(o.target), y2: Y(o.target), class: 'ref', 'stroke-width': 1 }, svg);
+    const pts = vals.map((v, i) => v == null ? null : [X(i), Y(v)]).filter(Boolean);
+    sv('path', { d: 'M' + pts.map((p) => p.join(',')).join('L'), fill: 'none', stroke: o.color || 'var(--series)', 'stroke-width': 1.75, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, svg);
+    if (vals[state.m] != null) sv('circle', { cx: X(state.m), cy: Y(vals[state.m]), r: 3.2, fill: o.color || 'var(--series)', stroke: 'var(--surface)', 'stroke-width': 1.5 }, svg);
+  }
+
+  /* ---------- donut ---------- */
+  function donut(host, segs, centerTop, centerSub) {
+    host.textContent = '';
+    const S = 168, r = 74, ri = 52, c = S / 2, tot = segs.reduce((a, s) => a + s.v, 0) || 1;
+    const svg = sv('svg', { viewBox: `0 0 ${S} ${S}`, width: S, height: S, class: 'svg' }, host);
+    let a0 = -Math.PI / 2;
+    const pt = (rad, a) => [c + rad * Math.cos(a), c + rad * Math.sin(a)];
+    segs.forEach((s) => {
+      if (!s.v) return;
+      let a1 = a0 + s.v / tot * Math.PI * 2; if (s.v === tot) a1 -= 0.0001;
+      const big = a1 - a0 > Math.PI ? 1 : 0, [x0, y0] = pt(r, a0), [x1, y1] = pt(r, a1), [x2, y2] = pt(ri, a1), [x3, y3] = pt(ri, a0);
+      const p = sv('path', { d: `M${x0},${y0}A${r},${r} 0 ${big} 1 ${x1},${y1}L${x2},${y2}A${ri},${ri} 0 ${big} 0 ${x3},${y3}Z`, fill: s.c, stroke: 'var(--surface)', 'stroke-width': 2 }, svg);
+      hover(p, () => [s.n, int(s.v) + ' معيار', pct(s.v / tot)]);
+      a0 = a1;
+    });
+    sv('text', { x: c, y: c - 2, 'text-anchor': 'middle', class: 'vl', style: 'font-size:22px' }, svg, centerTop);
+    sv('text', { x: c, y: c + 18, 'text-anchor': 'middle' }, svg, centerSub);
+    const lg = document.createElement('div'); lg.className = 'donut-legend';
+    segs.forEach((s) => { const d = document.createElement('div'); const i = document.createElement('i'); i.style.background = s.c; const b = document.createElement('b'); b.textContent = int(s.v); d.append(i, s.n, b); lg.append(d); });
+    host.append(lg);
+  }
+
+  /* ---------- html bars ---------- */
+  function bars(host, rows, o = {}) {
+    host.textContent = '';
+    const max = o.max != null ? o.max : Math.max(1e-9, ...rows.map((r) => r.v));
+    rows.forEach((r) => {
+      const row = document.createElement('div'); row.className = 'bar-row';
+      const l = document.createElement('span'); l.className = 'bl'; l.textContent = r.label;
+      if (r.badge) { const b = document.createElement('span'); b.className = 'esr'; b.textContent = r.badge; l.append(b); }
+      const tr = document.createElement('span'); tr.className = 'bar-track';
+      const f = document.createElement('span'); f.className = 'bar-fill'; f.style.width = Math.max(0, Math.min(100, r.v / max * 100)) + '%'; f.style.background = r.c; tr.append(f);
+      if (o.ref != null) { const rf = document.createElement('span'); rf.className = 'bar-ref'; rf.style.insetInlineStart = (o.ref / max * 100) + '%'; tr.append(rf); }
+      const v = document.createElement('span'); v.className = 'bv'; v.textContent = r.fmt;
+      row.append(l, tr, v);
+      if (r.tip) hover(row, r.tip);
+      host.append(row);
+    });
+  }
+
+  /* ---------- metric card ---------- */
+  function card(host, o) {
+    const c = document.createElement('div'); c.className = 'card'; c.style.setProperty('--strip', o.strip || 'var(--line)');
+    const l = document.createElement('div'); l.className = 'lbl'; l.textContent = o.label;
+    const v = document.createElement('div'); v.className = 'val'; v.textContent = o.value;
+    if (o.of) { const s = document.createElement('small'); s.textContent = ' ' + o.of; v.append(s); }
+    if (o.valColor) v.style.color = o.valColor;
+    const m = document.createElement('div'); m.className = 'meta';
+    (o.meta || []).forEach((p) => { if (typeof p === 'string') m.append(p); else { const s = document.createElement('span'); s.className = p.cls; s.textContent = p.t; m.append(s); } });
+    c.append(l, v, m);
+    if (o.spark) { const sp = document.createElement('div'); sp.className = 'spark'; c.append(sp); host.append(c); spark(sp, o.spark, o.sparkOpt || {}); }
+    else if (o.seg) { const sb = document.createElement('div'); sb.className = 'segbar'; o.seg.forEach((s) => { const x = document.createElement('span'); x.style.width = s.w + '%'; x.style.background = s.c; sb.append(x); }); c.append(sb); host.append(c); }
+    else host.append(c);
+  }
+  const deltaPart = (d, goodWhenUp, digits, unit) => {
+    if (d == null) return { t: 'لا يوجد شهر سابق', cls: 'flat' };
+    const good = goodWhenUp ? d > 0 : d < 0;
+    return { t: sgn(d, digits) + (unit || ''), cls: Math.abs(d) < 1e-9 ? 'flat' : good ? 'up' : 'down' };
+  };
+
+  /* ================= pages ================= */
+  function renderOverview() {
+    const i = state.m, c = comp(i), cp = i > 0 ? comp(i - 1) : null, eo = esrOpen(i), esrTotal = D.standards.filter((s) => s.esr).length;
+    // verdict
+    const v = $('verdict'), t = $('verdict-t'); t.textContent = '';
+    const b = (s) => { const x = document.createElement('b'); x.textContent = s; return x; };
+    if (eo.length) {
+      v.className = 'verdict bad';
+      t.append(b('غير جاهز لزيارة سباهي. '), 'في ' + mFull(i) + ' ', b(String(eo.length)), ' من معايير السلامة الأساسية (ESR) غير مطابق كليًا: ', b(eo.map((s) => s.c + ' ' + s.t).join('، ')), '. معايير ESR يجب أن تكون مطابقة بالكامل، فإغلاقها أولوية قبل أي شيء آخر.');
+    } else if (c >= CFG.target) {
+      v.className = 'verdict ok';
+      t.append(b('جاهزية جيدة. '), 'الامتثال في ' + mFull(i) + ' ', b(pct(c)), ' وكل معايير ESR مطابقة.');
+    } else {
+      v.className = 'verdict warn';
+      t.append(b('يحتاج عمل. '), 'الامتثال في ' + mFull(i) + ' ', b(pct(c)), ' وهو أقل من المستهدف ' + pct(CFG.target, 0) + '، مع أن كل معايير ESR مطابقة.');
+    }
+    // cards
+    const cards = $('cards'); cards.textContent = '';
+    const series = D.months.map((_, k) => comp(k));
+    card(cards, { label: 'الامتثال لمعايير إدارة الدواء', value: pct(c), valColor: levelColor(c), strip: levelColor(c),
+      meta: [deltaPart(cp == null ? null : (c - cp) * 100, true, 1, ' نقطة'), i > 0 ? ' عن ' + mName(i - 1) : ''], spark: series, sparkOpt: { target: CFG.target, color: 'var(--series)' } });
+    card(cards, { label: 'معايير ESR غير المطابقة', value: String(eo.length), of: 'من ' + esrTotal, valColor: eo.length ? 'var(--notmet)' : 'var(--met)', strip: eo.length ? 'var(--notmet)' : 'var(--met)',
+      meta: [eo.length ? eo.map((s) => s.c).join('، ') : 'كلها مطابقة'], spark: D.months.map((_, k) => esrOpen(k).length), sparkOpt: { lo: 0, hi: esrTotal, color: 'var(--notmet)' } });
+    const ok = kOnTarget(i), okp = i > 0 ? kOnTarget(i - 1) : null;
+    card(cards, { label: 'مؤشرات الأداء المحققة للمستهدف', value: String(ok), of: 'من ' + D.kpis.length, strip: levelColor(ok / D.kpis.length),
+      meta: [deltaPart(okp == null ? null : ok - okp, true, 0, ' مؤشر'), i > 0 ? ' عن ' + mName(i - 1) : ''], spark: D.months.map((_, k) => kOnTarget(k)), sparkOpt: { lo: 0, hi: D.kpis.length } });
+    const r = rate(i), rp = i > 0 ? rate(i - 1) : null;
+    card(cards, { label: 'الأخطاء الدوائية لكل 1,000 أمر', value: fx(r, 2), strip: 'var(--series-2)',
+      meta: [deltaPart(rp == null ? null : r - rp, false, 2), i > 0 ? ' عن ' + mName(i - 1) : ''], spark: D.months.map((_, k) => rate(k)), sparkOpt: { color: 'var(--series-2)' } });
+    const open = D.actions.filter((a) => a.st !== 'Closed'), late = open.filter(isLate), closed = D.actions.length - open.length;
+    card(cards, { label: 'إجراءات تصحيحية متأخرة', value: String(late.length), of: 'من ' + open.length + ' مفتوحة', valColor: late.length ? 'var(--notmet)' : 'var(--met)', strip: late.length ? 'var(--notmet)' : 'var(--met)',
+      meta: ['حتى اليوم، والمغلق ' + closed + ' من ' + D.actions.length],
+      seg: [{ w: closed / D.actions.length * 100, c: 'var(--met)' }, { w: (open.length - late.length) / D.actions.length * 100, c: 'var(--partial)' }, { w: late.length / D.actions.length * 100, c: 'var(--notmet)' }] });
+    // trend
+    const lo = Math.max(0, Math.floor((Math.min(...series) - 0.05) * 10) / 10);
+    lineChart($('ch-trend'), { vals: series, lo, hi: 1, target: CFG.target, color: css('--series') || '#0E6B5C', tick: (v) => pct(v, 0), fmt: (v) => pct(v), dot: levelColor, pick: true,
+      tip: (k) => [mFull(k), 'الامتثال: ' + pct(series[k]), ['var(--met)', 'مطابق: ' + count(k, 'M')], ['var(--partial)', 'جزئي: ' + count(k, 'P')], ['var(--notmet)', 'غير مطابق: ' + count(k, 'N')]] });
+    // domains
+    $('dom-sub').textContent = mFull(i) + '، والخط المتقطع ' + pct(CFG.target, 0);
+    bars($('ch-domains'), domains.map((d) => { const v = comp(i, (s) => s.d === d), n = D.standards.filter((s) => s.d === d).length; return { label: d, v, fmt: pct(v, 0), c: levelColor(v), tip: () => [d, 'الامتثال: ' + pct(v), 'عدد المعايير: ' + n] }; }), { max: 1, ref: CFG.target });
+    // donut
+    $('std-count').textContent = D.standards.length;
+    $('donut-sub').textContent = mFull(i);
+    donut($('ch-donut'), [
+      { n: 'مطابق', v: count(i, 'M'), c: css('--met') }, { n: 'مطابق جزئيًا', v: count(i, 'P'), c: css('--partial') },
+      { n: 'غير مطابق', v: count(i, 'N'), c: css('--notmet') }, { n: 'لا ينطبق', v: count(i, 'X'), c: css('--na') }
+    ].filter((s) => s.v || s.n !== 'لا ينطبق'), pct(c, 0), 'امتثال');
+    // gaps
+    const g = $('gaps'); g.textContent = '';
+    const rk = (s) => s.esr ? 0 : s.s[i] === 'N' ? 1 : 2;
+    const list = D.standards.filter((s) => s.s[i] === 'N' || s.s[i] === 'P').sort((a, b) => rk(a) - rk(b) || a.o - b.o);
+    if (!list.length) { const e = document.createElement('div'); e.className = 'empty'; e.textContent = 'كل المعايير مطابقة في ' + mFull(i) + '.'; g.append(e); }
+    list.forEach((s) => {
+      const row = document.createElement('div'); row.className = 'gap';
+      const cd = document.createElement('span'); cd.className = 'code'; cd.textContent = s.c;
+      const tt = document.createElement('span'); tt.className = 't'; tt.textContent = s.t;
+      if (s.esr) { const e = document.createElement('span'); e.className = 'esr'; e.textContent = 'ESR'; tt.append(e); }
+      const p = document.createElement('span'); p.className = 'pill ' + SC[s.s[i]].k; p.textContent = SC[s.s[i]].n;
+      const ac = document.createElement('span'); ac.className = 'act';
+      const a = actFor(s.c)[0];
+      ac.textContent = a ? a.id + ': ' + a.a + '، المسؤول ' + a.o + '، الاستحقاق ' + a.dd + (isLate(a) ? ' (متأخر)' : '') : 'لا يوجد إجراء تصحيحي مسجل بعد';
+      if (a && isLate(a)) ac.style.color = 'var(--notmet)';
+      row.append(cd, tt, p, ac); g.append(row);
+    });
+  }
+
+  function renderStandards() {
+    const i = state.m, tools = $('std-tools'); tools.textContent = '';
+    const chip = (label, pressed, fn) => { const b = document.createElement('button'); b.className = 'chip'; b.type = 'button'; b.textContent = label; b.setAttribute('aria-pressed', pressed); b.addEventListener('click', fn); tools.append(b); };
+    chip('كل المجالات', state.dom === 'all', () => { state.dom = 'all'; renderStandards(); });
+    domains.forEach((d) => chip(d, state.dom === d, () => { state.dom = d; renderStandards(); }));
+    chip('ESR فقط', state.esr, () => { state.esr = !state.esr; renderStandards(); });
+    const q = document.createElement('input'); q.className = 'search'; q.type = 'search'; q.placeholder = 'ابحث برقم المعيار أو اسمه'; q.value = state.q;
+    q.addEventListener('input', () => { state.q = q.value; drawBlister(); });
+    tools.append(q);
+    drawBlister();
+    function drawBlister() {
+      const f = (s) => (state.dom === 'all' || s.d === state.dom) && (!state.esr || s.esr) && (!state.q.trim() || (s.c + ' ' + s.t).includes(state.q.trim()));
+      const shown = D.standards.filter(f);
+      const counts = $('std-counts'); counts.textContent = '';
+      [['M', 'met'], ['P', 'partial'], ['N', 'notmet']].forEach(([k, cls]) => { const p = document.createElement('span'); p.className = 'pill ' + cls; p.textContent = SC[k].n + ' ' + shown.filter((s) => s.s[i] === k).length; counts.append(p); });
+      const host = $('blister'); host.textContent = '';
+      host.style.setProperty('--n', N);
+      const head = document.createElement('div'); head.className = 'bl-grid bl-head';
+      head.append(document.createElement('div'));
+      D.months.forEach((_, k) => { const h = document.createElement('button'); h.type = 'button'; h.className = 'mh' + (k === i ? ' on' : '');
+        h.textContent = host.clientWidth < 720 ? String(+D.months[k].slice(5, 7)) : mName(k); h.title = mFull(k); h.addEventListener('click', () => setMonth(k)); head.append(h); });
+      host.append(head);
+      if (!shown.length) { const e = document.createElement('div'); e.className = 'empty'; e.textContent = 'لا توجد معايير تطابق البحث. جرّب رقمًا مثل MM.5 أو كلمة من اسم المعيار.'; host.append(e); return; }
+      domains.forEach((d) => {
+        const rows = shown.filter((s) => s.d === d); if (!rows.length) return;
+        const pack = document.createElement('div'); pack.className = 'pack';
+        const ph = document.createElement('div'); ph.className = 'pack-h';
+        const pb = document.createElement('b'); pb.textContent = d;
+        const ps = document.createElement('span'); const dc = comp(i, (s) => s.d === d); ps.textContent = 'الامتثال في ' + mName(i) + ' ' + pct(dc, 0); ps.style.color = levelColor(dc);
+        ph.append(pb, ps); pack.append(ph);
+        const grid = document.createElement('div'); grid.className = 'bl-grid';
+        rows.forEach((s) => {
+          const lab = document.createElement('div'); lab.className = 'bl-lab';
+          const bc = document.createElement('b'); bc.textContent = s.c; lab.append(bc);
+          if (s.esr) { const e = document.createElement('span'); e.className = 'esr'; e.style.margin = '0 0 0 6px'; e.textContent = 'ESR'; lab.append(e); }
+          lab.append(s.t); lab.title = s.c + ' ' + s.t; grid.append(lab);
+          for (let k = 0; k < N; k++) {
+            const cap = document.createElement('div'); const code = s.s[k];
+            cap.className = 'cap ' + SC[code].k + (k === i ? ' on' : '');
+            cap.setAttribute('role', 'button'); cap.setAttribute('aria-label', s.c + ' ' + mFull(k) + ' ' + SC[code].n); cap.tabIndex = -1;
+            hover(cap, () => { const a = actFor(s.c)[0]; return [s.c + '، ' + mFull(k), s.t, SC[code].n].concat(a && code !== 'M' ? ['الإجراء: ' + a.a] : []); });
+            cap.addEventListener('click', () => { untip(); setMonth(k); });
+            grid.append(cap);
+          }
+        });
+        pack.append(grid); host.append(pack);
+      });
+    }
+  }
+
+  function renderKpis() {
+    const i = state.m, ok = kOnTarget(i);
+    const v = $('kpi-verdict'), t = $('kpi-verdict-t'); t.textContent = '';
+    v.className = 'verdict ' + (ok === D.kpis.length ? 'ok' : ok / D.kpis.length >= CFG.warn ? 'warn' : 'bad');
+    const missed = D.kpis.filter((k) => !kOk(k, i));
+    const b = document.createElement('b'); b.textContent = ok + ' من ' + D.kpis.length;
+    t.append('في ' + mFull(i) + ' تحقق ', b, ' مؤشرًا.');
+    if (missed.length) t.append(' المؤشرات المتأخرة مرتبطة بالمعايير ' + Array.from(new Set(missed.map((k) => k.std))).join('، ') + '.');
+    const g = $('kpi-grid'); g.textContent = '';
+    D.kpis.slice().sort((a, b2) => (kOk(a, i) - kOk(b2, i)) || (a.id < b2.id ? -1 : 1)).forEach((k) => {
+      const val = kVal(k, i), prev = kVal(k, i - 1), good = kOk(k, i);
+      const el = document.createElement('div'); el.className = 'kpi'; el.style.setProperty('--strip', good ? 'var(--met)' : 'var(--notmet)');
+      const kh = document.createElement('div'); kh.className = 'kh';
+      const kn = document.createElement('div'); kn.className = 'kn'; kn.textContent = k.n;
+      const ks = document.createElement('span'); ks.className = 'pill ' + (good ? 'met' : 'notmet'); ks.textContent = good ? 'محقق' : 'غير محقق';
+      kh.append(kn, ks);
+      const kv = document.createElement('div'); kv.className = 'kv';
+      kv.append(fx(val, 1) + (k.u === '%' ? '%' : '')); if (k.u !== '%') { const u = document.createElement('small'); u.textContent = ' ' + k.u; kv.append(u); }
+      const kt = document.createElement('div'); kt.className = 'kt';
+      const t1 = document.createElement('span'); t1.textContent = 'المستهدف ' + k.tg + (k.u === '%' ? '%' : ' ' + k.u) + (k.tg === 0 || k.tg === 100 ? '' : (k.dir === 'Higher' ? ' أو أعلى' : ' أو أقل'));
+      const t2 = document.createElement('span');
+      if (prev != null) { const d = val - prev, better = k.dir === 'Higher' ? d > 0 : d < 0; t2.textContent = sgn(d, 1) + ' عن ' + mName(i - 1); t2.className = Math.abs(d) < 1e-9 ? 'flat' : better ? 'up' : 'down'; }
+      kt.append(t1, t2);
+      const ksd = document.createElement('div'); ksd.className = 'ks'; ksd.textContent = 'المعيار ' + k.std;
+      const sp = document.createElement('div'); sp.className = 'spark';
+      el.append(kh, ksd, kv, kt, sp); g.append(el);
+      spark(sp, D.months.map((_, m) => kVal(k, m)), { target: k.tg, color: good ? 'var(--series)' : 'var(--notmet)' });
+      hover(sp, () => [k.n, ...D.months.map((_, m) => mName(m) + ': ' + fx(kVal(k, m), 1) + ' ' + k.u).slice(Math.max(0, i - 3), i + 1)]);
+    });
+  }
+
+  function renderErrors() {
+    const i = state.m, E = errIn(i), Ep = i > 0 ? errIn(i - 1) : null;
+    const KEYS = [{ k: 'near', n: 'خطأ وشيك (A–B)', c: 'var(--muted-bar)' }, { k: 'noharm', n: 'بدون ضرر (C–D)', c: 'var(--series-2)' }, { k: 'harm', n: 'ضرر (E–I)', c: 'var(--notmet)' }];
+    const cards = $('err-cards'); cards.textContent = '';
+    const harm = E.filter((e) => sev(e.ncc) === 'harm').length, near = E.filter((e) => sev(e.ncc) === 'near').length, ha = E.filter((e) => e.ha).length;
+    card(cards, { label: 'بلاغات الأخطاء في ' + mName(i), value: String(E.length), strip: 'var(--series-2)', meta: [deltaPart(Ep ? E.length - Ep.length : null, false, 0, ' بلاغ'), Ep ? ' عن ' + mName(i - 1) : ''] });
+    card(cards, { label: 'أخطاء نتج عنها ضرر (E–I)', value: String(harm), valColor: harm ? 'var(--notmet)' : 'var(--met)', strip: harm ? 'var(--notmet)' : 'var(--met)', meta: ['منذ يناير: ' + errs.filter((e) => e.mi <= i && sev(e.ncc) === 'harm').length] });
+    card(cards, { label: 'نسبة الأخطاء الوشيكة', value: pct(E.length ? near / E.length : null, 0), strip: 'var(--muted-bar)', meta: ['تم اعتراضها قبل وصولها للمريض'] });
+    card(cards, { label: 'أخطاء أدوية عالية الخطورة', value: pct(E.length ? ha / E.length : null, 0), strip: 'var(--partial)', meta: [ha + ' من ' + E.length + ' بلاغ، مرتبطة بـ MM.5'] });
+    const lg = $('err-legend'); lg.textContent = '';
+    KEYS.forEach((k) => { const s = document.createElement('span'); const x = document.createElement('i'); x.style.background = k.c; s.append(x, k.n); lg.append(s); });
+    const rows = D.months.map((_, m) => { const em = errIn(m); return { near: em.filter((e) => sev(e.ncc) === 'near').length, noharm: em.filter((e) => sev(e.ncc) === 'noharm').length, harm: em.filter((e) => sev(e.ncc) === 'harm').length }; });
+    stackChart($('ch-err-month'), { rows, keys: KEYS.map((k) => ({ k: k.k, c: k.c })), tip: (m) => [mFull(m), 'البلاغات: ' + (rows[m].near + rows[m].noharm + rows[m].harm), ...KEYS.map((k) => [k.c, k.n + ': ' + rows[m][k.k]]), 'لكل 1,000 أمر: ' + fx(rate(m), 2)] });
+    const rs = D.months.map((_, m) => rate(m)), rmax = Math.max(...rs);
+    lineChart($('ch-err-rate'), { vals: rs, lo: 0, hi: Math.ceil(rmax * 10 + 1) / 10, color: css('--series-2') || '#4F84B5', tick: (v) => v.toFixed(1), fmt: (v) => fx(v, 2), pick: true, H: 240,
+      tip: (m) => [mFull(m), 'المعدل: ' + fx(rs[m], 2), 'البلاغات: ' + errIn(m).length, 'الأوامر: ' + int(orders(m))] });
+    const upTo = errs.filter((e) => e.mi <= i), span = 'من ' + mName(0) + ' حتى ' + mFull(i);
+    $('stage-sub').textContent = 'عدد البلاغات ' + span;
+    const stages = ['الوصف', 'النقل والإدخال', 'الصرف', 'الإعطاء', 'المتابعة'];
+    bars($('ch-stage'), stages.map((s) => { const n = upTo.filter((e) => e.stage === s).length; return { label: s, v: n, fmt: int(n), c: 'var(--series)', tip: () => [s, 'البلاغات: ' + n, pct(upTo.length ? n / upTo.length : 0)] }; }));
+    bars($('ch-ncc'), 'ABCDEFGHI'.split('').map((l) => { const n = upTo.filter((e) => e.ncc === l).length, s = sev(l); return { label: 'الفئة ' + l, v: n, fmt: int(n), c: s === 'near' ? 'var(--muted-bar)' : s === 'noharm' ? 'var(--series-2)' : 'var(--notmet)', tip: () => ['NCC MERP ' + l, 'البلاغات: ' + n] }; }));
+    $('unit-sub').textContent = 'بلاغات لكل 1,000 أمر ' + span;
+    const ur = Object.keys(D.workload).map((u) => { let o = 0; for (let m = 0; m <= i; m++) o += D.workload[u][m] || 0; const n = upTo.filter((e) => e.unit === u).length; return { u, n, o, r: o ? n / o * 1000 : 0 }; }).sort((a, b) => b.r - a.r);
+    bars($('ch-unit'), ur.map((x) => ({ label: D.units[x.u], v: x.r, fmt: fx(x.r, 2), c: 'var(--series-2)', tip: () => [D.units[x.u], 'البلاغات: ' + x.n, 'الأوامر: ' + int(x.o), 'لكل 1,000 أمر: ' + fx(x.r, 2)] })));
+    const classes = Array.from(new Set(errs.map((e) => e.cls)));
+    const cr = classes.map((c) => ({ c, n: upTo.filter((e) => e.cls === c).length })).sort((a, b) => b.n - a.n);
+    bars($('ch-class'), cr.map((x) => ({ label: x.c, badge: HIGH_ALERT_CLASSES.has(x.c) ? 'عالي الخطورة' : null, v: x.n, fmt: int(x.n), c: HIGH_ALERT_CLASSES.has(x.c) ? 'var(--partial)' : 'var(--series)', tip: () => [x.c, 'البلاغات: ' + x.n, HIGH_ALERT_CLASSES.has(x.c) ? 'أدوية عالية الخطورة (MM.5)' : ''].filter(Boolean) })));
+  }
+
+  function renderActions() {
+    const open = D.actions.filter((a) => a.st !== 'Closed'), late = open.filter(isLate), closed = D.actions.length - open.length;
+    const cards = $('act-cards'); cards.textContent = '';
+    card(cards, { label: 'إجراءات مفتوحة', value: String(open.length), strip: 'var(--partial)', meta: ['منها ' + open.filter((a) => a.p === 'High').length + ' بأولوية عالية'] });
+    card(cards, { label: 'متأخرة عن الاستحقاق', value: String(late.length), valColor: late.length ? 'var(--notmet)' : 'var(--met)', strip: late.length ? 'var(--notmet)' : 'var(--met)', meta: ['حتى اليوم ' + TODAY] });
+    card(cards, { label: 'نسبة الإغلاق', value: pct(closed / D.actions.length, 0), strip: 'var(--met)', meta: [closed + ' من ' + D.actions.length + ' إجراء'],
+      seg: [{ w: closed / D.actions.length * 100, c: 'var(--met)' }, { w: (open.length - late.length) / D.actions.length * 100, c: 'var(--partial)' }, { w: late.length / D.actions.length * 100, c: 'var(--notmet)' }] });
+    const tools = $('act-tools'); tools.textContent = '';
+    [['all', 'الكل'], ['open', 'المفتوحة'], ['late', 'المتأخرة'], ['closed', 'المغلقة']].forEach(([k, n]) => {
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'chip'; b.textContent = n; b.setAttribute('aria-pressed', state.act === k);
+      b.addEventListener('click', () => { state.act = k; renderActions(); }); tools.append(b);
+    });
+    const body = $('act-body'); body.textContent = '';
+    const f = { all: () => true, open: (a) => a.st !== 'Closed', late: isLate, closed: (a) => a.st === 'Closed' }[state.act];
+    const rank = (a) => isLate(a) ? 0 : a.st !== 'Closed' ? 1 : 2;
+    const rows = D.actions.filter(f).sort((a, b) => rank(a) - rank(b) || (a.dd < b.dd ? -1 : 1));
+    if (!rows.length) { const tr = document.createElement('tr'); const td = document.createElement('td'); td.colSpan = 8; td.className = 'empty'; td.textContent = 'لا توجد إجراءات في هذا التصنيف.'; tr.append(td); body.append(tr); }
+    rows.forEach((a) => {
+      const tr = document.createElement('tr'); if (isLate(a)) tr.className = 'late';
+      const td = (txt, cls) => { const c = document.createElement('td'); if (cls) c.className = cls; c.textContent = txt; tr.append(c); return c; };
+      td(a.id, 'nw'); td(a.std, 'nw'); td(a.f); td(a.a); td(a.o); td(a.dd, 'nw');
+      const sc = td('', 'nw'); const p = document.createElement('span'); p.className = 'pill ' + (a.st === 'Closed' ? 'met' : isLate(a) ? 'notmet' : 'partial'); p.textContent = isLate(a) ? 'متأخر' : ST[a.st]; sc.append(p);
+      td(PR[a.p], 'nw');
+      body.append(tr);
+    });
+  }
+
+  /* ================= wiring ================= */
+  const R = { overview: renderOverview, standards: renderStandards, kpis: renderKpis, errors: renderErrors, actions: renderActions };
+  function render() { untip(); R[state.tab](); }
+  function setMonth(i) { state.m = i; $('month').value = String(i); render(); }
+  $('hosp').textContent = CFG.hospital + '، ' + CFG.chapter;
+  const sel = $('month');
+  D.months.forEach((_, i) => { const o = document.createElement('option'); o.value = String(i); o.textContent = mFull(i); sel.append(o); });
+  sel.value = String(state.m);
+  sel.addEventListener('change', () => setMonth(+sel.value));
+  document.querySelectorAll('.tab').forEach((b) => b.addEventListener('click', () => {
+    state.tab = b.dataset.tab;
+    document.querySelectorAll('.tab').forEach((x) => x.setAttribute('aria-selected', x === b));
+    document.querySelectorAll('.page').forEach((p) => { p.hidden = p.id !== 'p-' + state.tab; });
+    history.replaceState(null, '', '#' + state.tab);
+    render(); window.scrollTo({ top: 0 });
+  }));
+  const start = location.hash.slice(1);
+  if (R[start]) document.querySelector(`.tab[data-tab="${start}"]`).click(); else render();
+  let rt; let lastW = innerWidth;
+  addEventListener('resize', () => { if (Math.abs(innerWidth - lastW) < 8) return; lastW = innerWidth; clearTimeout(rt); rt = setTimeout(render, 150); });
+  if (matchMedia) matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change', render);
+})();
+</script>
+</body>
+</html>
