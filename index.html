@@ -138,7 +138,7 @@ main { max-width: 1280px; margin: 0 auto; padding: 20px; display: flex; flex-dir
 .search { flex: 1 1 180px; min-width: 150px; background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 5px 14px; font-size: 13px; }
 .blister-scroll { overflow-x: auto; }
 .blister-min { min-width: 540px; }
-.bl-grid { display: grid; grid-template-columns: minmax(170px, 300px) repeat(var(--n), minmax(26px, 1fr)); gap: 6px 6px; align-items: center; }
+.bl-grid { display: grid; direction: ltr; grid-template-columns: repeat(var(--n), minmax(26px, 1fr)) minmax(170px, 300px); gap: 6px 6px; align-items: center; }
 .bl-head { position: sticky; top: 0; background: var(--surface); padding: 4px 0 8px; z-index: 1; }
 .bl-head .mh { background: none; border: 0; width: 100%; text-align: center; font-size: 12px; color: var(--ink-3); cursor: pointer; border-radius: 6px; padding: 2px 0; }
 .bl-head .mh.on { color: var(--brand-ink); background: var(--brand); font-weight: 700; }
@@ -146,7 +146,7 @@ main { max-width: 1280px; margin: 0 auto; padding: 20px; display: flex; flex-dir
 .pack-h { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-bottom: 8px; font-size: 13px; }
 .pack-h b { font-weight: 700; }
 .pack-h span { color: var(--ink-3); font-variant-numeric: tabular-nums; }
-.bl-lab { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--ink-2); }
+.bl-lab { direction: rtl; text-align: right; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--ink-2); }
 .bl-lab b { color: var(--ink); font-variant-numeric: tabular-nums; margin-inline-end: 6px; }
 .cap { height: 16px; width: 100%; max-width: 46px; justify-self: center; border-radius: 999px; cursor: pointer; position: relative; border: 1.5px solid transparent; transition: transform .12s ease; }
 .cap:hover { transform: scale(1.08); }
@@ -455,7 +455,7 @@ const D = {"months":["2025-10-01","2025-11-01","2025-12-01","2026-01-01","2026-0
     for (let v = Math.ceil(lo / step - 1e-9) * step; v <= hi + 1e-9; v += step) out.push(+v.toFixed(10));
     return out;
   }
-  const xOf = (i, n, left, right) => n === 1 ? (left + right) / 2 : right - i * (right - left) / (n - 1); // RTL: first month on the right
+  const xOf = (i, n, left, right) => n === 1 ? (left + right) / 2 : left + i * (right - left) / (n - 1); // chronological left → right (oldest month on the left)
 
   /* ---------- line chart ---------- */
   function lineChart(host, o) {
@@ -502,7 +502,7 @@ const D = {"months":["2025-10-01","2025-11-01","2025-12-01","2026-01-01","2026-0
     ticks.forEach((t) => { sv('line', { x1: L, x2: W - pr, y1: Y(t), y2: Y(t), class: 'grid' }, svg); sv('text', { x: W - pr + 6, y: Y(t), dy: '0.32em', 'text-anchor': 'start' }, svg, int(t)); });
     const every = Math.max(1, Math.ceil(n / Math.max(1, Math.floor((R - L) / 46))));
     o.rows.forEach((r, i) => {
-      const cx = R - band * i - band / 2, on = i === state.m;
+      const cx = L + band * i + band / 2, on = i === state.m;
       let acc = 0;
       o.keys.forEach((k) => {
         const v = r[k.k]; if (!v) return;
@@ -678,9 +678,9 @@ const D = {"months":["2025-10-01","2025-11-01","2025-12-01","2026-01-01","2026-0
       const host = $('blister'); host.textContent = '';
       host.style.setProperty('--n', N);
       const head = document.createElement('div'); head.className = 'bl-grid bl-head';
-      head.append(document.createElement('div'));
       D.months.forEach((_, k) => { const h = document.createElement('button'); h.type = 'button'; h.className = 'mh' + (k === i ? ' on' : '');
         h.textContent = host.clientWidth < 720 ? String(+D.months[k].slice(5, 7)) : mName(k); h.title = mFull(k); h.addEventListener('click', () => setMonth(k)); head.append(h); });
+      head.append(document.createElement('div'));
       host.append(head);
       if (!shown.length) { const e = document.createElement('div'); e.className = 'empty'; e.textContent = 'لا توجد معايير تطابق البحث. جرّب رقمًا مثل MM.5 أو كلمة من اسم المعيار.'; host.append(e); return; }
       domains.forEach((d) => {
@@ -695,7 +695,7 @@ const D = {"months":["2025-10-01","2025-11-01","2025-12-01","2026-01-01","2026-0
           const lab = document.createElement('div'); lab.className = 'bl-lab';
           const bc = document.createElement('b'); bc.textContent = s.c; lab.append(bc);
           if (s.esr) { const e = document.createElement('span'); e.className = 'esr'; e.style.margin = '0 0 0 6px'; e.textContent = 'ESR'; lab.append(e); }
-          lab.append(s.t); lab.title = s.c + ' ' + s.t; grid.append(lab);
+          lab.append(s.t); lab.title = s.c + ' ' + s.t;
           for (let k = 0; k < N; k++) {
             const cap = document.createElement('div'); const code = s.s[k];
             cap.className = 'cap ' + SC[code].k + (k === i ? ' on' : '');
@@ -704,6 +704,7 @@ const D = {"months":["2025-10-01","2025-11-01","2025-12-01","2026-01-01","2026-0
             cap.addEventListener('click', () => { untip(); setMonth(k); });
             grid.append(cap);
           }
+          grid.append(lab);
         });
         pack.append(grid); host.append(pack);
       });
