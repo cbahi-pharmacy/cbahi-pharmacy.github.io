@@ -142,7 +142,7 @@ main { max-width: 1280px; margin: 0 auto; padding: 20px; display: flex; flex-dir
 .blister-scroll { overflow-x: auto; }
 .blister-min { min-width: 540px; }
 .bl-grid { display: grid; grid-template-columns: minmax(170px, 300px) repeat(var(--n), minmax(26px, 1fr)); gap: 6px 6px; align-items: center; }
-.bl-head { position: sticky; top: 0; background: var(--surface); padding: 4px 0 8px; z-index: 1; }
+.bl-head { position: sticky; top: 0; background: var(--surface); padding: 4px 14px 8px; z-index: 1; } /* same side padding as .pack, so each month sits over its capsules */
 .bl-head .mh { background: none; border: 0; width: 100%; text-align: center; font-size: 12px; color: var(--ink-3); cursor: pointer; border-radius: 6px; padding: 2px 0; }
 .bl-head .mh.on { color: var(--brand-ink); background: var(--brand); font-weight: 700; }
 .pack { background: var(--line-2); border-radius: 14px; padding: 12px 14px; margin-bottom: 10px; }
@@ -196,6 +196,22 @@ footer p { margin: 0 0 4px; max-width: 80ch; }
   .cards .card:last-child:nth-child(odd) { grid-column: span 2; }
   .card { padding: 12px 14px 10px; } .card .val { font-size: 24px; } .card .lbl { font-size: 12px; line-height: 1.45; }
   .panel { padding: 14px; }
+  /* standards map: the name on its own line, all the months under it (no sideways scroll hiding the chosen month) */
+  .blister-min { min-width: 0; }
+  .bl-grid { grid-template-columns: repeat(var(--n), minmax(0, 1fr)); gap: 3px 4px; }
+  .bl-head > div:first-child { display: none; }
+  .bl-head, .pack { padding-inline: 8px; }
+  .bl-lab { grid-column: 1 / -1; margin-top: 6px; }
+  .cap { height: 14px; }
+  /* action plan: one card per action */
+  #p-actions thead { display: none; }
+  #p-actions tr { display: block; padding: 8px 0; border-bottom: 1px solid var(--line); }
+  #p-actions td { display: block; border: 0; padding: 2px 10px; white-space: normal; }
+  #p-actions td:nth-child(-n+2), #p-actions td:nth-child(n+7) { display: inline-block; }
+  #p-actions td:nth-child(-n+2) { font-weight: 700; }
+  #p-actions td[data-l]::before { content: attr(data-l); color: var(--ink-3); font-size: 12px; margin-inline-end: 8px; }
+  #p-actions tr.late { background: var(--notmet-soft); box-shadow: inset -3px 0 0 var(--notmet); }
+  #p-actions tr.late td:first-child { box-shadow: none; }
 }
 @media (prefers-reduced-motion: reduce) { .cap { transition: none; } .cap:hover { transform: none; } }
 </style>
@@ -259,7 +275,7 @@ footer p { margin: 0 0 4px; max-width: 80ch; }
       </div>
       <div class="panel span-7">
         <h2>المعايير التي تحتاج إغلاق</h2>
-        <p class="sub">غير المطابقة كليًا في الشهر المختار، مع الإجراء التصحيحي المرتبط</p>
+        <p class="sub">غير المطابقة والمطابقة جزئيًا في الشهر المختار، مع الإجراء التصحيحي المرتبط</p>
         <div class="gaps" id="gaps"></div>
       </div>
     </div>
@@ -459,7 +475,8 @@ function boot(live) {
   const SC = { M: { k: 'met', n: 'مطابق', p: 2 }, P: { k: 'partial', n: 'مطابق جزئيًا', p: 1 }, N: { k: 'notmet', n: 'غير مطابق', p: 0 }, X: { k: 'na', n: 'لا ينطبق', p: null } };
   const ST = { 'Open': 'مفتوح', 'In Progress': 'قيد التنفيذ', 'Closed': 'مغلق' };
   const PR = { 'High': 'عالية', 'Medium': 'متوسطة', 'Low': 'منخفضة' };
-  const TODAY = new Date().toISOString().slice(0, 10);
+  const TODAY = new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);  // (the local day, not UTC's)
+  const dmy = (d) => d ? '⁦' + d.split('-').reverse().join('/') + '⁩' : '—';  // 2026-10-15 → 15/10/2026, kept in one piece inside Arabic text
   const HIGH_ALERT_CLASSES = new Set(D.errors.filter((e) => e[5]).map((e) => e[4]));
   const state = { m: Math.max(0, D.months.map((_, k) => D.standards.some((s) => s.s[k] !== 'X')).lastIndexOf(true)), tab: 'overview', dom: 'all', esr: false, q: '', act: 'all' };
   const $ = (id) => document.getElementById(id);
@@ -554,7 +571,7 @@ function boot(live) {
     const X = (i) => xOf(i, n, L, R), Y = (v) => pt + (1 - (v - o.lo) / (o.hi - o.lo)) * (H - pt - pb);
     ticks.forEach((t) => { sv('line', { x1: L - 6, x2: W - pr, y1: Y(t), y2: Y(t), class: 'grid' }, svg); sv('text', { x: W - pr + 6, y: Y(t), dy: '0.32em', 'text-anchor': 'start' }, svg, o.tick(t)); });
     const every = Math.max(1, Math.ceil(n / Math.max(1, Math.floor((R - L) / 46))));
-    for (let i = 0; i < n; i++) if (i % every === 0 || i === n - 1) sv('text', { x: X(i), y: H - 8, 'text-anchor': 'middle', class: i === state.m ? 'sel' : '' }, svg, mName(i));
+    for (let i = 0; i < n; i++) if ((n - 1 - i) % every === 0) sv('text', { x: X(i), y: H - 8, 'text-anchor': 'middle', class: i === state.m ? 'sel' : '' }, svg, mName(i));
     if (o.target != null && o.target >= o.lo && o.target <= o.hi) {
       sv('line', { x1: L - 6, x2: W - pr, y1: Y(o.target), y2: Y(o.target), class: 'ref' }, svg);
       sv('text', { x: W - pr - 4, y: Y(o.target) - 6, 'text-anchor': 'start', direction: 'rtl' }, svg, 'المستهدف ' + o.tick(o.target));
@@ -598,7 +615,7 @@ function boot(live) {
         acc += v;
       });
       sv('text', { x: cx, y: Y(acc) - 6, 'text-anchor': 'middle', class: on ? 'vl' : '' }, svg, int(acc));
-      if (i % every === 0 || i === n - 1) sv('text', { x: cx, y: H - 8, 'text-anchor': 'middle', class: on ? 'sel' : '' }, svg, mName(i));
+      if ((n - 1 - i) % every === 0) sv('text', { x: cx, y: H - 8, 'text-anchor': 'middle', class: on ? 'sel' : '' }, svg, mName(i));
       const hit = sv('rect', { x: cx - band / 2, y: pt - 10, width: band, height: H - pt - pb + 10, fill: 'transparent', style: 'cursor:pointer' }, svg);
       hit.addEventListener('mousemove', (evt) => tip(evt, o.tip(i)));
       hit.addEventListener('mouseleave', untip);
@@ -742,7 +759,7 @@ function boot(live) {
       const p = document.createElement('span'); p.className = 'pill ' + SC[s.s[i]].k; p.textContent = SC[s.s[i]].n;
       const ac = document.createElement('span'); ac.className = 'act';
       const a = actFor(s.c)[0];
-      ac.textContent = a ? a.id + ': ' + a.a + '، المسؤول ' + a.o + '، الاستحقاق ' + a.dd + (isLate(a) ? ' (متأخر)' : '') : 'لا يوجد إجراء تصحيحي مسجل بعد';
+      ac.textContent = a ? a.id + ': ' + a.a + '، المسؤول ' + a.o + '، الاستحقاق ' + dmy(a.dd) + (isLate(a) ? ' (متأخر)' : '') : 'لا يوجد إجراء تصحيحي مسجل بعد';
       if (a && isLate(a)) ac.style.color = 'var(--notmet)';
       row.append(cd, tt, p, ac); g.append(row);
     });
@@ -835,7 +852,7 @@ function boot(live) {
     const cards = $('err-cards'); cards.textContent = '';
     const harm = E.filter((e) => sev(e.ncc) === 'harm').length, near = E.filter((e) => sev(e.ncc) === 'near').length, ha = E.filter((e) => e.ha).length;
     card(cards, { label: 'بلاغات الأخطاء في ' + mName(i), value: String(E.length), strip: 'var(--series-2)', meta: [deltaPart(Ep ? E.length - Ep.length : null, false, 0, ' بلاغ'), Ep ? ' عن ' + mName(i - 1) : ''] });
-    card(cards, { label: 'أخطاء نتج عنها ضرر (E–I)', value: String(harm), valColor: harm ? 'var(--notmet)' : 'var(--met)', strip: harm ? 'var(--notmet)' : 'var(--met)', meta: ['منذ يناير: ' + errs.filter((e) => e.mi <= i && sev(e.ncc) === 'harm').length] });
+    card(cards, { label: 'أخطاء نتج عنها ضرر (E–I)', value: String(harm), valColor: harm ? 'var(--notmet)' : 'var(--met)', strip: harm ? 'var(--notmet)' : 'var(--met)', meta: ['منذ ' + mFull(0) + ': ' + errs.filter((e) => e.mi <= i && sev(e.ncc) === 'harm').length] });
     card(cards, { label: 'نسبة الأخطاء الوشيكة', value: pct(E.length ? near / E.length : null, 0), strip: 'var(--muted-bar)', meta: ['تم اعتراضها قبل وصولها للمريض'] });
     card(cards, { label: 'أخطاء أدوية عالية الخطورة', value: pct(E.length ? ha / E.length : null, 0), strip: 'var(--partial)', meta: [ha + ' من ' + E.length + ' بلاغ، مرتبطة بـ MM.5'] });
     const lg = $('err-legend'); lg.textContent = '';
@@ -862,7 +879,7 @@ function boot(live) {
     const open = D.actions.filter((a) => a.st !== 'Closed'), late = open.filter(isLate), closed = D.actions.length - open.length;
     const cards = $('act-cards'); cards.textContent = '';
     card(cards, { label: 'إجراءات مفتوحة', value: String(open.length), strip: 'var(--partial)', meta: ['منها ' + open.filter((a) => a.p === 'High').length + ' بأولوية عالية'] });
-    card(cards, { label: 'متأخرة عن الاستحقاق', value: String(late.length), valColor: late.length ? 'var(--notmet)' : 'var(--met)', strip: late.length ? 'var(--notmet)' : 'var(--met)', meta: ['حتى اليوم ' + TODAY] });
+    card(cards, { label: 'متأخرة عن الاستحقاق', value: String(late.length), valColor: late.length ? 'var(--notmet)' : 'var(--met)', strip: late.length ? 'var(--notmet)' : 'var(--met)', meta: ['حتى اليوم ' + dmy(TODAY)] });
     card(cards, { label: 'نسبة الإغلاق', value: pct(closed / D.actions.length, 0), strip: 'var(--met)', meta: [closed + ' من ' + D.actions.length + ' إجراء'],
       seg: [{ w: closed / D.actions.length * 100, c: 'var(--met)' }, { w: (open.length - late.length) / D.actions.length * 100, c: 'var(--partial)' }, { w: late.length / D.actions.length * 100, c: 'var(--notmet)' }] });
     const tools = $('act-tools'); tools.textContent = '';
@@ -871,14 +888,15 @@ function boot(live) {
       b.addEventListener('click', () => { state.act = k; renderActions(); }); tools.append(b);
     });
     const body = $('act-body'); body.textContent = '';
+    const HEADS = Array.from(document.querySelectorAll('#p-actions th'), (th) => th.textContent);  // (each cell's name, shown on phones)
     const f = { all: () => true, open: (a) => a.st !== 'Closed', late: isLate, closed: (a) => a.st === 'Closed' }[state.act];
     const rank = (a) => isLate(a) ? 0 : a.st !== 'Closed' ? 1 : 2;
     const rows = D.actions.filter(f).sort((a, b) => rank(a) - rank(b) || (a.dd < b.dd ? -1 : 1));
     if (!rows.length) { const tr = document.createElement('tr'); const td = document.createElement('td'); td.colSpan = 8; td.className = 'empty'; td.textContent = 'لا توجد إجراءات في هذا التصنيف.'; tr.append(td); body.append(tr); }
     rows.forEach((a) => {
       const tr = document.createElement('tr'); if (isLate(a)) tr.className = 'late';
-      const td = (txt, cls) => { const c = document.createElement('td'); if (cls) c.className = cls; c.textContent = txt; tr.append(c); return c; };
-      td(a.id, 'nw'); td(a.std, 'nw'); td(a.f); td(a.a); td(a.o); td(a.dd, 'nw');
+      const td = (txt, cls) => { const c = document.createElement('td'); if (cls) c.className = cls; c.textContent = txt; c.dataset.l = HEADS[tr.cells.length]; tr.append(c); return c; };
+      td(a.id, 'nw'); td(a.std, 'nw'); td(a.f); td(a.a); td(a.o); td(dmy(a.dd), 'nw');
       const sc = td('', 'nw'); const p = document.createElement('span'); p.className = 'pill ' + (a.st === 'Closed' ? 'met' : isLate(a) ? 'notmet' : 'partial'); p.textContent = isLate(a) ? 'متأخر' : ST[a.st]; sc.append(p);
       td(PR[a.p], 'nw');
       body.append(tr);
